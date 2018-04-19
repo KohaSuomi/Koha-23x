@@ -614,7 +614,7 @@ if ( $patron ) {
 
 my $fast_cataloging = 0;
 if ( Koha::BiblioFrameworks->find('FA') ) {
-    $fast_cataloging = 1 
+    $fast_cataloging = 1
 }
 
 my $view = $batch
@@ -706,5 +706,7 @@ $template->param(
 $template->param(
     csrf_token => Koha::Token->new->generate_csrf({ session_id => $query->cookie('CGISESSID'),}),
 );
+
+C4::Log::logaction("MEMBERS", "VIEW", $borrowernumber, "Check out page") if (C4::Context->preference("BorrowersViewLog") && $borrowernumber);
 
 output_html_with_http_headers $query, $cookie, $template->output;

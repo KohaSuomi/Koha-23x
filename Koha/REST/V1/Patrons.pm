@@ -56,6 +56,10 @@ sub list {
         my $patrons_rs = Koha::Patrons->search($query);
         my $patrons    = $c->objects->search( $patrons_rs );
 
+        foreach my $patron (@{$patrons}) {
+            C4::Log::logaction("MEMBERS", "VIEW", $patron->{patron_id}, "Patrons search") if C4::Context->preference("BorrowersViewLog");
+        }
+
         return $c->render(
             status  => 200,
             openapi => $patrons
@@ -85,6 +89,8 @@ sub get {
                 openapi => { error => "Patron not found." }
             );
         }
+
+        C4::Log::logaction("MEMBERS", "VIEW", $patron->{borrowernumber}, "Patron selection") if C4::Context->preference("BorrowersViewLog");
 
         return $c->render(
             status  => 200,
