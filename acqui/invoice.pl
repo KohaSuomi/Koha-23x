@@ -44,7 +44,10 @@ use Koha::Misc::Files;
 use Koha::Acquisition::Invoice::Adjustments;
 use Koha::Acquisition::Invoices;
 
-my $input = CGI->new;
+# KD-4349 This is needed for validating the redirects
+my $staffclientbaseurl=C4::Context->preference('StaffClientBaseURL');
+
+my $input = new CGI;
 my ( $template, $loggedinuser, $cookie, $flags ) = get_template_and_user(
     {
         template_name   => 'acqui/invoice.tt',
@@ -79,6 +82,10 @@ if ( $op && $op eq 'close' ) {
         CloseInvoice($invoiceid);
     }
     my $referer = $input->param('referer');
+    # KD-4349 Validate redirects
+    unless ( grep (/^\//, $referer) || grep (/^https?\/\/$staffclientbaseurl/, $referer) ) {
+        $referer = 'invoices.pl';
+    }
     if ($referer) {
         print $input->redirect($referer);
         exit 0;
@@ -92,6 +99,10 @@ elsif ( $op && $op eq 'reopen' ) {
         ReopenInvoice($invoiceid);
     }
     my $referer = $input->param('referer');
+    # KD-4349 Validate redirects
+    unless ( grep (/^\//, $referer) || grep (/^https?\/\/$staffclientbaseurl/, $referer) ) {
+        $referer = 'invoices.pl';
+    }
     if ($referer) {
         print $input->redirect($referer);
         exit 0;
@@ -148,7 +159,11 @@ elsif ( $op && $op eq 'delete' ) {
 
     DelInvoice($invoiceid);
     defined($invoice_files) && $invoice_files->DelAllFiles();
-    my $referer = $input->param('referer') || 'invoices.pl';
+    my $referer = $input->param('referer');
+    # KD-4349 Validate redirects
+    unless ( grep (/^\//, $referer) || grep (/^https?\/\/$staffclientbaseurl/, $referer) ) {
+        $referer = 'invoices.pl';
+    }
     if ($referer) {
         print $input->redirect($referer);
         exit 0;
