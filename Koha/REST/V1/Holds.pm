@@ -275,6 +275,8 @@ sub edit {
 
         $pickup_library_id //= $hold->branchcode;
         my $priority         = $body->{priority} // $hold->priority;
+        my $hold_date        = $body->{hold_date} // $hold->reservedate;
+        my $expiration_date  = $body->{expiration_date} // $hold->expirationdate;
         # suspended_until can also be set to undef
         my $suspended_until = $body->{suspended_until} || $hold->suspend_until;
 
@@ -284,6 +286,8 @@ sub edit {
             rank          => $priority,
             suspend_until => $suspended_until,
             itemnumber    => $hold->itemnumber,
+            reservedate => $hold_date,
+            expirationdate  => $expiration_date,
         };
 
         C4::Reserves::ModReserve($params);
