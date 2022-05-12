@@ -55,7 +55,7 @@
         [%- SET display_patron_name = 0 -%]
     [%- END -%]
 [%- END -%]
-[%- IF hide_patron_infos_if_needed AND ( display_patron_name OR display_cardnumber ) -%]
+[%- IF !no_html AND ( display_patron_name OR display_cardnumber ) -%]
     [%- IF link_to == 'circulation_reserves' -%]<a href="/cgi-bin/koha/circ/circulation.pl?borrowernumber=[%- data.borrowernumber | uri -%]#reserves">
     [%- ELSIF link_to == 'circulation_recalls' -%]<a href="/cgi-bin/koha/circ/circulation.pl?borrowernumber=[%- data.borrowernumber | uri -%]#recalls">
     [%- ELSIF link_to == 'members_pay' -%]<a href="/cgi-bin/koha/members/pay.pl?borrowernumber=[%- patron.borrowernumber | uri -%]">
@@ -79,6 +79,6 @@
     <span>A patron from library [%- Branches.GetName( patron.branchcode ) | html -%]</span>
 [%- END -%]
 
-[%- IF hide_patron_infos_if_needed AND ( display_patron_name OR display_cardnumber ) -%]
+[%- IF !no_html AND ( display_patron_name OR display_cardnumber ) -%]
     </a>
 [%- END -%]
