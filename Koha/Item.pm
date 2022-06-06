@@ -1716,6 +1716,7 @@ sub to_api_mapping {
         stocknumber              => 'inventory_number',
         new_status               => 'new_status',
         deleted_on               => undef,
+        sub_location             => 'sub_location'
     };
 }
 

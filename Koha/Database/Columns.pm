@@ -229,6 +229,7 @@ sub columns {
             "deleted_on"                        => __("Deleted on"),
             "location"                          => __("Shelving location"),
             "permanent_location"                => __("Permanent shelving location"),
+            "sub_location"                      => __("Sublocation"),
             "onloan"                            => __("Due date"),
             "cn_source"                         => __("Source of classification / shelving scheme"),
             "cn_sort"                           => __("Koha normalized classification for sorting"),

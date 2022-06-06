@@ -436,6 +436,12 @@
                             [% ELSE %]
                                 [% item_location | html %]
                             [% END %]
+                            [% SET item_sublocation= AuthorisedValues.GetDescriptionByKohaField( kohafield => 'items.sub_location', authorised_value => item.sub_location ) %]
+                            [% IF ( item_sublocation ) %]
+                            <span class="sub_location">
+                            ([% item_sublocation | html %])
+                            </span>
+                            [% END %]
                         </span>
                     </td>
                     [% IF ( itemdata_ccode ) %]<td>[% AuthorisedValues.GetDescriptionByKohaField( kohafield => 'items.ccode', authorised_value => item.ccode ) | html %]</td>[% END %]
