@@ -790,6 +790,10 @@ foreach ( sort { $a <=> $b } keys %returneditems ) {
                            # we could handle that better displaying a message in the template
 
         my $biblio = $item->biblio;
+        my $biblioitem = $item->biblioitem;
+        
+            my $authorised_value_mtype = Koha::AuthorisedValues->get_description_by_koha_field({ kohafield => 'biblioitems.itemtype', authorised_value => $biblioitem->itemtype });
+
         # FIXME pass $item to the template and we are done here...
         $ri{itembiblionumber}    = $biblio->biblionumber;
         $ri{itemtitle}           = $biblio->title;
@@ -799,7 +803,7 @@ foreach ( sort { $a <=> $b } keys %returneditems ) {
         $ri{itemauthor}          = $biblio->author;
         $ri{itemcallnumber}      = $item->itemcallnumber;
         $ri{dateaccessioned}     = $item->dateaccessioned;
-        $ri{recordtype}          = $biblio->itemtype;
+        $ri{recordtype}          = $authorised_value_mtype->{lib};
         $ri{itemtype}            = $item->itype;
         $ri{itemnote}            = $item->itemnotes;
         $ri{itemnotes_nonpublic} = $item->itemnotes_nonpublic;
