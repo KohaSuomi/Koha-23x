@@ -1,0 +1,42 @@
+name: Versiobugi
+description: Lisää versiobugi-ilmoitus. Muista lisätä otsikko ja oikealle projekti-osioon "Versionvaihto".
+labels: [bug]
+body:
+- type: textarea
+  attributes:
+    label: Mikä vikana?
+    description: Kerro mahdollisimman tarkasti, mikä on vikana. Asiakastietoja ei saa lisätä tikettiin, linkki asiakastietoon riittää.
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Mitä pitäisi tapahtua
+    description: Mitä pitäisi tapahtua?
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Kuinka toistaa ongelma/asia
+    description: Kuinka voi toistaa ongelman/asian?
+    placeholder: |
+      1. Kohan osio...
+      2. Järjestelmäasetus...
+      3. Aja '...'
+      4. Virheilmoitus...
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Jotain muuta?
+    description: |
+     Lisätietoja aiheesta.
+      Vinkki: Voit liittää kuvia tai tiedostoja klikkaamalla tätä aluetta ja vetämällä kuvan tai tiedoston tänne.
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Asiasanat/tagit
+    description: |
+     Lisää tähän asiasanoja/tageja, joilla tätä tikettiä voisi ajatella hakevansa. GitHubin haku ei osaa katkaista sanoja.
+  validations:
+    required: false
