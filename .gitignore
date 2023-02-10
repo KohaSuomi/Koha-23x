@@ -25,3 +25,12 @@ how-to.pl
 koha-tmpl/intranet-tmpl/prog/en/modules/how-to.tt
 
 misc/translator/po
+Koha/Schema/Result
+installer/data/mysql/fi-FI/
+koha-tmpl/opac-tmpl/bootstrap/fi-FI/
+koha-tmpl/intranet-tmpl/prog/fi-FI/
+installer/data/mysql/sv-SE/
+koha-tmpl/opac-tmpl/bootstrap/sv-SE/
+koha-tmpl/intranet-tmpl/prog/sv-SE/
+misc/translator/po/fi-FI-*
+misc/translator/po/sv-SE-*
