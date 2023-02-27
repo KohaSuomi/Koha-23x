@@ -37,11 +37,11 @@ function Focus$function_name(subfield_managed, id, force) {
 }
 
 function Click$function_name(event) {
-    
+
     var bn = \$('input[name="biblionumber"]').val();
-     
+
     \$('#' + event.data.id).prop('disabled', true);
-     
+
     if (!bn) return false;
     \$('#' + event.data.id).prop('disabled', true);
     var url = '../cataloguing/plugin_launcher.pl?plugin_name=fi_JSON_084a_signum_builder_subfields.pl&biblionumber=' + bn;
@@ -50,8 +50,8 @@ function Click$function_name(event) {
 	alert(error);
     \$('#' + event.data.id).prop('disabled', false);
 	});
-    req.done(function(resp){     
-         
+    req.done(function(resp){
+
         // Do shelving location
         var shelvingLoc = \$("select[id^='tag_952_subfield_c']").val() ? \$("select[id^='tag_952_subfield_c']").val() : \$("div[id^='subfieldc']").find("select").val();
         if (!shelvingLoc) {
@@ -70,9 +70,6 @@ function Click$function_name(event) {
         var marc110a = resp.f110a;
         var marc111a = resp.f111a;
 
-        // First indicator is 'bypass'
-         var marc130a = resp.f130a;
-
         // Second indicator is 'bypass'
         var marc245a = resp.f245a;
 
@@ -84,13 +81,11 @@ function Click$function_name(event) {
             var mainHeading = marc110a;
         } else if (marc111a) {
             var mainHeading = marc111a;
-        } else if (marc130a) {
-            var mainHeading = marc130a;
         } else if (marc245a) {
             var mainHeading = marc245a;
-        }    
-    
-    
+        }
+
+
         var branch = \$("select[id^='tag_952_subfield_a']").val() ? \$("select[id^='tag_952_subfield_a']").val() : \$("div[id^='subfielda']").find("select").val();
         if (!branch) {
             branch = "";
@@ -102,18 +97,18 @@ function Click$function_name(event) {
         if (splitted) {
             branch = splitted;
         }
-        
+
          // This will determine the order of the signum elements
         // In Lumme it's class mainheading location
-        
+
         var dat = marc084a + " " + mainHeading + " " + branch + shelvingLoc;
 
-       
+
  	    \$('#' + event.data.id).val(dat);
         \$('#' + event.data.id).prop('disabled', false);
 
      });
-     return false;   
+     return false;
 }
 
 //]]>
@@ -124,4 +119,4 @@ ENDJS
     return $js;
 };
 
-return { builder => $builder };    
+return { builder => $builder };
