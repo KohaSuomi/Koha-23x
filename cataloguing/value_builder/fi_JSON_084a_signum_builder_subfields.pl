@@ -24,7 +24,7 @@ use JSON;
 use C4::Auth qw( get_template_and_user );
 use C4::Context;
 use C4::Output qw( output_with_http_headers );
-use C4::Biblio qw( GetMarcBiblio );
+use Koha::Biblios;
 
 my $launcher = sub {
 
@@ -43,7 +43,7 @@ my $launcher = sub {
         debug           => 1,
     });
 
-    my $marc = GetMarcBiblio({ biblionumber => $biblionumber });
+    my $marc = Koha::Biblios->find($biblionumber)->metadata->record;
     return if (!$marc);
 
     my $f942m = $marc->subfield('942', 'm') || '';
