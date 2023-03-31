@@ -45,12 +45,11 @@
 
         <h5>Holds</h5>
         <ul>
-<<<<<<< HEAD
             <li>
                 <a href="/cgi-bin/koha/circ/view_holdsqueue.pl">Holds queue</a>
             </li>
             <li>
-                <a href="/cgi-bin/koha/circ/pendingreserves.pl">Holds to pull</a>
+                <a href="/cgi-bin/koha/circ/kohasuomi-pendingreserves.pl">Holds to pull</a>
             </li>
             <li>
                 <a href="/cgi-bin/koha/circ/waitingreserves.pl">Holds awaiting pickup</a>
@@ -59,19 +58,6 @@
             <li>
                 <a href="/cgi-bin/koha/circ/curbside_pickups.pl">Curbside pickups</a>
             </li>
-=======
-            <li><a href="/cgi-bin/koha/circ/view_holdsqueue.pl">Holds queue</a></li>
-            <li><a href="/cgi-bin/koha/circ/kohasuomi-pendingreserves.pl">Holds to pull</a></li>
-            <li><a href="/cgi-bin/koha/circ/waitingreserves.pl">Holds awaiting pickup</a></li>
-            <li><a href="/cgi-bin/koha/circ/reserveratios.pl">Hold ratios</a></li>
-            <li><a href="/cgi-bin/koha/circ/transferstoreceive.pl">Transfers to receive</a></li>
-            [% IF ( CAN_user_circulate_overdues_report ) %]
-                <li><a href="/cgi-bin/koha/circ/overdue.pl">Overdues</a></li>
-            [% END %]
-            <li><a href="/cgi-bin/koha/circ/branchoverdues.pl">Overdues with fines</a></li>
-            [% IF Koha.Preference('OnSiteCheckouts') %]
-                <li><a href="/cgi-bin/koha/circ/on-site_checkouts.pl">Pending on-site checkouts</a></li>
->>>>>>> d737e46fd4... KD-5542 Fix holds to pull link in circ-nav
             [% END %]
             <li>
                 <a href="/cgi-bin/koha/circ/reserveratios.pl">Hold ratios</a>
