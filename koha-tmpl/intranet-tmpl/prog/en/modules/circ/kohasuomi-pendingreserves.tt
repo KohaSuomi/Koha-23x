@@ -15,12 +15,11 @@
 
     //<![CDATA[
         $(document).ready(function() {
-
-            var columns_settings = [% TablesSettings.GetColumns('circ', 'holds', 'kohasuomi-holds-to-pull', 'json') | $raw %];
-            var holdst = KohaTable("holdst", {
+          var table_settings = [% TablesSettings.GetTableSettings('circ', 'holds', 'kohasuomi-holds-to-pull', 'json') | $raw %];
+          var holdst = KohaTable("holdst", {
             "sPaginationType": "full_numbers"
-            }, columns_settings);
-            holdst.fnAddFilters("filter");
+          }, table_settings);
+          holdst.fnAddFilters("filter");
 
             [%# add separateData function to cleanse jQuery select lists by breaking apart strings glued with BR tags and then de-duplicating any repeated library codes %]
             function separateData ( ColumnData ){
