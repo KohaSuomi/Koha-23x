@@ -131,110 +131,68 @@
 <script>
 
 function highlight() {
-
-	//for even rows
-
-	var even = document.getElementsByClassName('even');
-
-	for (var i = 0; i < even.length; ++i) {
-
-		var holdingarr = [];
-
-		var holdingbranches = even[i].getElementsByClassName("ks-holdingbranch");
-
-		var tobranches = even[i].getElementsByClassName("ks-tobranch");
-
-		for (var j = 0; j < holdingbranches.length; ++j) {
-
-			holdingarr.push(holdingbranches[j].textContent);
-
-		}
-	}
-
-	checkMatches(even);
-
-	//for odd rows
-
-	var odd = document.getElementsByClassName('odd');
-
-	for (var i = 0; i < odd.length; ++i) {
-
-		var holdingarr = [];
-
-		var holdingbranches = odd[i].getElementsByClassName("ks-holdingbranch");
-
-		var tobranches = odd[i].getElementsByClassName("ks-tobranch");
-
-		for (var j = 0; j < holdingbranches.length; ++j) {
-
-			holdingarr.push(holdingbranches[j].textContent);
-		}
-	}
-
-	checkMatches(odd);
-
-	function checkMatches(element_array){
-
-		for (var i = 0; i < element_array.length; ++i) {
-
-		var holdingarr = [];
-		var toarr = [];
-
-		var holdingbranches = element_array[i].getElementsByClassName("ks-holdingbranch");
-
-		var tobranches = element_array[i].getElementsByClassName("ks-tobranch");
-
-		for (var j = 0; j < holdingbranches.length; ++j) {
-
-			holdingarr.push(holdingbranches[j].textContent);
+        //for even rows
+        var even = document.getElementsByClassName('even');
+        for (var i = 0; i < even.length; ++i) {
+            var holdingarr = [];
+            var holdingbranches = even[i].getElementsByClassName("ks-holdingbranch");
+            var tobranches = even[i].getElementsByClassName("ks-tobranch");
+            for (var j = 0; j < holdingbranches.length; ++j) {
+                holdingarr.push(holdingbranches[j].textContent);
+            }
         }
-
-		for (var j = 0; j < tobranches.length; ++j) {
-
-			toarr.push(tobranches[j].textContent);
+        checkMatches(even);
+        //for odd rows
+        var odd = document.getElementsByClassName('odd');
+        for (var i = 0; i < odd.length; ++i) {
+            var holdingarr = [];
+            var holdingbranches = odd[i].getElementsByClassName("ks-holdingbranch");
+            var tobranches = odd[i].getElementsByClassName("ks-tobranch");
+            for (var j = 0; j < holdingbranches.length; ++j) {
+                holdingarr.push(holdingbranches[j].textContent);
+            }
         }
+        checkMatches(odd);
 
-		var fromelements = [];
-		var toelements = [];
-
-		Array.from(holdingbranches, child => {
-
-			fromelements.push(child);
-
-		});
-
-		Array.from(tobranches, child => {
-
-		    toelements.push(child);
-		});
-
-			for (var k = 0; k < fromelements.length; ++k) {
-
-				for (var l = 0; l < toelements.length; ++l) {
-
-					if (fromelements[k].textContent == toelements[l].textContent){
-
-					fromelements[k].style.color = "#ff5500";
-					fromelements[k].style.fontWeight = "bold";
-					//toelements[l].style.color = "#ff5500";
-					//toelements[l].style.fontWeight = "bold";
-					}
-				}
-			}
-		}
-	}
-}
-
-document.addEventListener("DOMContentLoaded", function(e) {
-
-	highlight();
-
-$(document).click(function(event) {
-
-     highlight();
-
- });
-});
+        function checkMatches(element_array) {
+            for (var i = 0; i < element_array.length; ++i) {
+                var holdingarr = [];
+                var toarr = [];
+                var holdingbranches = element_array[i].getElementsByClassName("ks-holdingbranch");
+                var tobranches = element_array[i].getElementsByClassName("ks-tobranch");
+                for (var j = 0; j < holdingbranches.length; ++j) {
+                    holdingarr.push(holdingbranches[j].textContent);
+                }
+                for (var j = 0; j < tobranches.length; ++j) {
+                    toarr.push(tobranches[j].textContent);
+                }
+                var fromelements = [];
+                var toelements = [];
+                Array.from(holdingbranches, child => {
+                    fromelements.push(child);
+                });
+                Array.from(tobranches, child => {
+                    toelements.push(child);
+                });
+                for (var k = 0; k < fromelements.length; ++k) {
+                    for (var l = 0; l < toelements.length; ++l) {
+                        if (fromelements[k].textContent == toelements[l].textContent) {
+                            fromelements[k].style.color = "#ff5500";
+                            fromelements[k].style.fontWeight = "bold";
+                            //toelements[l].style.color = "#ff5500";
+                            //toelements[l].style.fontWeight = "bold";
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $( document ).ready(function() {
+        highlight();
+        $(document).click(function (event) {
+            highlight();
+        });
+    });
 
 </script>
 
