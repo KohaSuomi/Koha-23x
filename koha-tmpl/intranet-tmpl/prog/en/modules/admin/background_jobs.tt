@@ -253,11 +253,14 @@
             let additional_filters = {
                 enqueued_on: function(){
                     let now = new Date();
+                    var tzoffset = (new Date()).getTimezoneOffset() * 60000;
+                    if ( $("#only_current").is(":checked") && !$("#include_last_hour").is(":checked")) {
+                        return 0;
+                    }
                     if ( $("#include_last_hour").is(":checked") ) {
-                        now.setHours(now.getHours() - 1);
-                        return { ">": now.toISOString() };
+                        return { ">": (new Date(now.setHours(now.getHours() - 1) - tzoffset)).toISOString().slice(0, -1) };
                     } else {
-                        return { "<": now.toISOString() };
+                        return { "<": (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1) };
                     }
                 }
             };
