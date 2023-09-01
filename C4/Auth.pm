@@ -778,6 +778,8 @@ sub _timeout_syspref {
         $timeout = $default_timeout;
     }
 
+    $timeout =  C4::AuthExtra::get_timeout(undef,$timeout);
+
     return $timeout;
 }
 
@@ -1581,6 +1583,9 @@ sub check_api_auth {
 
         # new login
         my $userid   = $query->param('userid');
+
+        $timeout = C4::AuthExtra::get_timeout($userid,$timeout);
+
         my $password = $query->param('password');
         my ( $return, $cardnumber, $cas_ticket );
 
@@ -1779,6 +1784,9 @@ sub check_cookie_auth {
         my $ip       = $session->param('ip');
         my $lasttime = $session->param('lasttime');
         my $timeout = _timeout_syspref();
+
+        ###########KD-4564
+        $timeout = C4::AuthExtra::get_timeout($userid,$timeout);
 
         if ( !$lasttime || ( $lasttime < time() - $timeout ) ) {
             # time out

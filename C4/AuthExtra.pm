@@ -21,11 +21,13 @@ use Digest::MD5 qw(md5_base64);
 #gets timeout based on borrower's category
 sub get_timeout {
     my $error;
+    ##passed cardnumber value is actually userid
     my ($cardnumber,$timeout) = @_;
 
     my $dbh   = C4::Context->dbh;
-    my $valueyaml;
+
     my $retval = $timeout;
+    my $automaatti_timeout = 31536000;
 
     try {
 
@@ -34,7 +36,7 @@ sub get_timeout {
 
         if ($cardnumber) {
             $cardnumber = trim($cardnumber);
-            my $sql = "select categorycode from borrowers where trim(cardnumber)='".$cardnumber."'";
+            my $sql = "select categorycode from borrowers where TRIM(userid)='".$cardnumber."'";
             my $sth = $dbh->prepare($sql);
             $sth->execute();
             while (@row = $sth->fetchrow_array()) {
@@ -43,16 +45,11 @@ sub get_timeout {
             $sth->finish();
         }
 
-        #get timeout's valueyaml from systempreferences
-        $valueyaml = Koha::Config::SysPrefs->find('BorrowerCategoryTimeout')->value;
+#does logged in borrower categorycode include chars *AUTO*
+        my $substring = "AUTO";
 
-        #get category's timeout
-        if($valueyaml) {
-            my $timeouts = Load($valueyaml);
-            my $newtimeout = $timeouts->{$categorycode};
-            if($newtimeout > 0) {
-                $retval = $newtimeout;
-            }
+        if (index($categorycode, $substring) != -1) {
+            $retval = $automaatti_timeout;
         }
     }
     catch {
