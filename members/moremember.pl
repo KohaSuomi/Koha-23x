@@ -221,17 +221,28 @@ my $no_issues_charge_guarantees = C4::Context->preference("NoIssuesChargeGuarant
 $no_issues_charge_guarantees = undef unless looks_like_number( $no_issues_charge_guarantees );
 if ( defined $no_issues_charge_guarantees ) {
     my $guarantees_non_issues_charges = 0;
+    my $guarantees_total_charges = 0;
     my $guarantees = $patron->guarantee_relationships->guarantees;
     while ( my $g = $guarantees->next ) {
+        
+        my $account = $g->account;
+        my $account_lines = $account->outstanding_debits;
+        my $total = $account_lines->total_outstanding;
+        
         $guarantees_non_issues_charges += $g->account->non_issues_charges;
+        $guarantees_total_charges += $total;
     }
     if ( $guarantees_non_issues_charges > $no_issues_charge_guarantees ) {
         $template->param(
             charges_guarantees    => 1,
             chargesamount_guarantees => $guarantees_non_issues_charges,
+            chargesamount_guarantees_total => $guarantees_total_charges,
         );
+        
     }
 }
+
+
 
 if ( $patron->has_overdues ) {
     $template->param( odues => 1 );
@@ -242,7 +253,16 @@ my $balance = 0;
 $balance = $patron->account->balance;
 
 my $account = $patron->account;
-if( ( my $owing = $account->non_issues_charges ) > 0 ) {
+my $account_lines = $account->outstanding_debits;
+my $total = $account_lines->total_outstanding;
+
+$template->param(
+    total => $total,
+);
+
+my $owing = $account->non_issues_charges;
+
+if ( $total > 0 ) {
     my $noissuescharge = C4::Context->preference("noissuescharge") || 5; # FIXME If noissuescharge == 0 then 5, why??
     $template->param(
         charges => 1,
@@ -284,7 +304,6 @@ elsif ( $patron->is_going_to_expire ) {
         $template->param("returnbeforeexpiry" => 1);
     }
 }
-
 
 my $has_modifications = Koha::Patron::Modifications->search( { borrowernumber => $borrowernumber } )->count;
 my $patron_lists_count = $patron->get_lists_with_patron->count();

@@ -108,7 +108,10 @@
 
         [% IF ( charges_guarantees ) %]
             <li class="charges_guarantees">
-                <span class="circ-hlt">Charges:</span> Patron's guarantees collectively owe [% chargesamount_guarantees | $Price %].
+                <span class="circ-hlt">Charges:</span> Patron's guarantees collectively owe [% chargesamount_guarantees | $Price with_symbol => 1 %].
+                Guarantees total (incl. non-blocking ): [% chargesamount_guarantees_total | $Price with_symbol => 1 %].
+                
+                
                     [% IF noissues %]
                         <span class="circ-hlt">Checkouts are BLOCKED because fine balance is OVER THE LIMIT.</span>
                     [% END %]

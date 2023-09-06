@@ -276,6 +276,7 @@ if ($patron) {
             $template->param("returnbeforeexpiry" => 1);
         }
     }
+
     $template->param(
         overduecount => $overdues->count,
         issuecount   => $issues->count,
@@ -536,7 +537,16 @@ if ( $patron ) {
         $noissues = 1;
     }
     my $account = $patron->account;
-    if( ( my $owing = $account->non_issues_charges ) > 0 ) {
+    my $account_lines = $account->outstanding_debits;
+    my $total = $account_lines->total_outstanding;
+    
+    $template->param(
+    total => $total,
+    );
+    
+    my $owing = $account->non_issues_charges;
+    
+    if( $total > 0 ) {
         my $noissuescharge = C4::Context->preference("noissuescharge") || 5; # FIXME If noissuescharge == 0 then 5, why??
         $noissues ||= ( not C4::Context->preference("AllowFineOverride") and ( $owing > $noissuescharge ) );
         $template->param(
@@ -567,14 +577,22 @@ if ( $patron ) {
     $no_issues_charge_guarantees = undef unless looks_like_number( $no_issues_charge_guarantees );
     if ( defined $no_issues_charge_guarantees ) {
         my $guarantees_non_issues_charges = 0;
+        my $guarantees_total_charges = 0;
         my $guarantees = $patron->guarantee_relationships->guarantees;
         while ( my $g = $guarantees->next ) {
+            
+            my $account = $g->account;
+            my $account_lines = $account->outstanding_debits;
+            my $total = $account_lines->total_outstanding;
+            
             $guarantees_non_issues_charges += $g->account->non_issues_charges;
+            $guarantees_total_charges += $total;
         }
         if ( $guarantees_non_issues_charges > $no_issues_charge_guarantees ) {
             $template->param(
                 charges_guarantees    => 1,
                 chargesamount_guarantees => $guarantees_non_issues_charges,
+                chargesamount_guarantees_total => $guarantees_total_charges,
             );
             $noissues = 1 unless C4::Context->preference("allowfineoverride");
         }
