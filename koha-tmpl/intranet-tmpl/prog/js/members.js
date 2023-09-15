@@ -74,6 +74,15 @@ function update_category_code(category_code) {
     var min_length = $('select'+category_selector+' option:selected').data('pwdLength');
     var hint_string = __("Minimum password length: %s").format(min_length);
     hint.html(hint_string);
+
+    // Remove class ignore_validation from attribute field so it's validated
+    if($(mytables).find("li").is(":visible")){
+        $(mytables).find("li").children('[id*="patron_attr"]').removeClass("ignore_validation");
+    }
+    // Add class ignore_validation from attribute field to ignore validation
+    if($(mytables).find("li").is(":hidden")){
+        $(mytables).find("li").children('[id*="patron_attr"]').addClass("ignore_validation");
+    }
 }
 
 function select_user(borrowernumber, borrower, relationship) {
@@ -117,6 +126,11 @@ function select_user(borrowernumber, borrower, relationship) {
 
         $('#guarantor_relationships').append( fieldset );
         fieldset.show();
+
+        // Remove class ignore_validation from new_guarantor_relationship to validate missing relationship value
+        if($(".new_guarantor_relationship").is(":visible")){
+            $(".new_guarantor_relationship").removeClass("ignore_validation");
+        }
 
         if ( relationship ) {
             fieldset.find('.new_guarantor_relationship').val(relationship);
@@ -240,6 +254,7 @@ $(document).ready(function(){
         jQuery.validator.messages.phone);
 
     $("#entryform").validate({
+        ignore: ".ignore_validation",
         rules: {
             email: {
                 email: true
@@ -268,7 +283,23 @@ $(document).ready(function(){
             else
                 form.beenSubmitted = true;
                 form.submit();
-            }
+        },
+        invalidHandler: function(form, validator) {
+            var error_msg = jQuery.validator.messages.missing_fields;
+            // First remove error messages so that it doesn't
+            // show in fieldset without errors
+            $("fieldset").each(function(){
+                $("#"+$(this).attr("id")+"-error").remove();
+            });
+            $(validator.errorList).each(function() {
+                var fieldset = $(this.element).parents('[id*="memberentry_"]');
+                var fieldset_id = fieldset.attr("id");
+                //Add error message only if it doesn't already exist
+                if(!$("#"+fieldset_id+"-error").length){
+                    fieldset.find("legend").after('<span id="'+fieldset_id+'-error" class="required">'+error_msg+'</span>');
+                }
+            });
+        }
     });
 
     var mrform = $("#manual_restriction_form");

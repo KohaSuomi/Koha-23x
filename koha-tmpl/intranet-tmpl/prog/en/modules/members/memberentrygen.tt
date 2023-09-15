@@ -1568,14 +1568,18 @@ legend:hover {
                                                     [% END %]
                                                     [% FOREACH patron_attribute IN pa_loo.items %]
                                                         <li data-category_code="[% patron_attribute.category_code | html %]" data-pa_code="[% patron_attribute.code | replace('[^a-zA-Z0-9_-]', '') %]">
-                                                            [% IF patron_attribute.mandatory %]
+                                                            [% IF patron_attribute.mandatory && patron_attribute.category_code == patron_category.categorycode%]
                                                                 <label for="[% patron_attribute.form_id | html %]" class="required" required="required">[% patron_attribute.description | html %]: </label>
+                                                            [% ELSIF patron_attribute.mandatory && patron_attribute.category_code != patron_category.categorycode %]
+                                                                <label for="[% patron_attribute.form_id | html %]" class="required ignore_validation" required="required">[% patron_attribute.description | html %]: </label>
                                                             [% ELSE %]
                                                                 <label for="[% patron_attribute.form_id | html %]">[% patron_attribute.description | html %]: </label>
                                                             [% END %]
                                                             [% IF ( patron_attribute.use_dropdown ) %]
-                                                                [% IF patron_attribute.mandatory %]
+                                                                [% IF patron_attribute.mandatory && patron_attribute.category_code == patron_category.categorycode %]
                                                                     <select id="[% patron_attribute.form_id | html %]" name="[% patron_attribute.form_id | html %]" required="required">
+                                                                [% ELSIF patron_attribute.mandatory && patron_attribute.category_code != patron_category.categorycode %]
+                                                                    <select id="[% patron_attribute.form_id | html %]" class="ignore_validation" name="[% patron_attribute.form_id | html %]" required="required">
                                                                 [% ELSE %]
                                                                     <select id="[% patron_attribute.form_id | html %]" name="[% patron_attribute.form_id | html %]">
                                                                 [% END %]
@@ -1962,6 +1966,16 @@ legend:hover {
             });
         [% END %]
         $("#guarantor_template").hide();
+
+        //Add class ignore_validation to hidden new_guarantor_relationship to ignore it when form is validated
+        if($(".new_guarantor_relationship").is(":hidden")){
+            $(".new_guarantor_relationship").addClass("ignore_validation");
+        }
+
+        // Remove class ignore_validation from new_guarantor_relationship to validate missing relationship value
+        if($(".new_guarantor_relationship").is(":visible")){
+            $(".new_guarantor_relationship").removeClass("ignore_validation");
+        }
 
         var TalkingTechItivaPhoneNotification = [% Koha.Preference('TalkingTechItivaPhoneNotification') || 0 | html %];
         var PhoneNotification = [% Koha.Preference('PhoneNotification') || 0 | html %];
