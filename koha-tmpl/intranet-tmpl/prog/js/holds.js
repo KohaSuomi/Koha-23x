@@ -634,7 +634,7 @@ async function load_holds_queue() {
                     } else if (data.status == 'P') {
                         return __("Item being processed at <strong>%s</strong>").format(libraryname);
                     } else if (data.status == 'W') {
-                        return __("Item waiting at <strong>%s</strong> since %s").format(libraryname, $date(data.waiting_date));   
+                        return __("Item waiting at <strong>%s</strong> since %s").format(libraryname, $date(data.waiting_date));
                     } else {
                         return branchSelect;
                     }
@@ -693,7 +693,7 @@ async function load_holds_queue() {
                     if ( data.status == 'T' ) {
                         return '<input type="button" value="'+__("Revert transit status")+'" onclick="window.location.href=\'request.pl?action=move&amp;where=down&amp;first_priority=1&amp;last_priority='+totalHolds+'&amp;prev_priority=0&amp;next_priority=1&amp;borrowernumber='+data.patron_id+'&amp;biblionumber='+data.biblio_id+'&amp;itemnumber='+data.item_id+'&amp;reserve_id='+data.hold_id+'&amp;date='+data.hold_date+'\'">';
                     } else if (data.status == 'W' || data.status == 'P') {
-                        return '<input type="button" value="'+__("Revert waiting status")+'" onclick="window.location.href=\'request.pl?action=move&amp;where=down&amp;first_priority=1&amp;last_priority='+totalHolds+'&amp;prev_priority=0&amp;next_priority=1&amp;borrowernumber='+data.patron_id+'&amp;biblionumber='+data.biblio_id+'&amp;itemnumber='+data.item_id+'&amp;reserve_id='+data.hold_id+'&amp;date='+data.hold_date+'\'">';  
+                        return '<input type="button" value="'+__("Revert waiting status")+'" onclick="window.location.href=\'request.pl?action=move&amp;where=down&amp;first_priority=1&amp;last_priority='+totalHolds+'&amp;prev_priority=0&amp;next_priority=1&amp;borrowernumber='+data.patron_id+'&amp;biblionumber='+data.biblio_id+'&amp;itemnumber='+data.item_id+'&amp;reserve_id='+data.hold_id+'&amp;date='+data.hold_date+'\'">';
                     } else {
                         var td = '';
                         if (SuspendHoldsIntranet) {
@@ -720,7 +720,11 @@ async function load_holds_queue() {
             },
             {
                 "mDataProp": function( data, type, full, meta) {
-                    return '<input class="printholdslip" type="button" name="printholdslip" value="'+__("Print slip")+'" data-reserve_id="'+data.hold_id+'">';
+		    if ( data.status == 'W' || data.status == 'T' ) {
+			return '<input class="printholdslip" type="button" name="printholdslip" value="'+__("Print slip")+'" data-reserve_id="'+data.hold_id+'">';
+		    } else {
+			return null;
+		    }
                 }
             },
         ]
