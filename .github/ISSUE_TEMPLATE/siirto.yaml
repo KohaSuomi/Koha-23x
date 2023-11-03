@@ -1,6 +1,7 @@
 name: Siirto
 description: Lisää siirto-ilmoitus. Muista lisätä otsikko ja oikealle projekti-osioon "Versionvaihto".
 labels: [bug]
+projects: [KohaSuomi/6]
 body:
 - type: textarea
   attributes:
