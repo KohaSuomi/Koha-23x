@@ -1,6 +1,7 @@
 name: Versiobugi
 description: Lisää versiobugi-ilmoitus. Muista lisätä otsikko ja oikealle projekti-osioon "Versionvaihto".
 labels: [bug]
+project: [KohaSuomi/6]
 body:
 - type: textarea
   attributes:
