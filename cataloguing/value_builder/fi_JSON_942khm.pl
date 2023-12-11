@@ -49,11 +49,13 @@ my $launcher = sub {
     my $f942k = $marc->subfield('942', 'k') || '';
     my $f942h = $marc->subfield('942', 'h') || '';
     my $f942m = $marc->subfield('942', 'm') || '';
+    my $f942c = $marc->subfield('942', 'c') || '';
 
     my %ret = (
 	'f942k' => $f942k,
 	'f942h' => $f942h,
 	'f942m' => $f942m,
+	'f942c' => $f942c,
 	);
 
     output_with_http_headers $input, undef, to_json(\%ret, { utf8 => 1}), 'json';
