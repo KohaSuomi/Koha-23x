@@ -83,7 +83,7 @@ sub connect {
 
 =head3 enqueue
 
-Enqueue a new job. It will insert a new row in the DB table and notify the broker that a new job has been enqueued.
+Enqueue a new job. It will insert a new row in the DB table.
 
 C<job_size> is the size of the job
 C<job_args> is the arguments of the job. It's a structure that will be JSON encoded.
@@ -119,36 +119,6 @@ sub enqueue {
             borrowernumber => $borrowernumber,
         }
     )->store;
-
-    $job_args->{job_id} = $self->id;
-
-    my $conn;
-    try {
-        $conn = $self->connect;
-    } catch {
-        warn "Cannot connect to broker " . $_;
-    };
-    return $self->id unless $conn;
-
-    $json_args = $json->encode($job_args);
-    try {
-        # This namespace is wrong, it must be a vhost instead.
-        # But to do so it needs to be created on the server => much more work when a new Koha instance is created.
-        # Also, here we just want the Koha instance's name, but it's not in the config...
-        # Picking a random id (memcached_namespace) from the config
-        my $namespace = C4::Context->config('memcached_namespace');
-        my $encoded_args = Encode::encode_utf8( $json_args ); # FIXME We should better leave this to Net::Stomp?
-        my $destination = sprintf( "/queue/%s-%s", $namespace, $job_queue );
-        $conn->send_with_receipt( { destination => $destination, body => $encoded_args, persistent => 'true' } )
-          or Koha::Exceptions::Exception->throw('Job has not been enqueued');
-    } catch {
-        $self->status('failed')->store;
-        if ( ref($_) eq 'Koha::Exceptions::Exception' ) {
-            $_->rethrow;
-        } else {
-            warn sprintf "The job has not been sent to the message broker: (%s)", $_;
-        }
-    };
 
     return $self->id;
 }
