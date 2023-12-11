@@ -25,8 +25,7 @@ background_jobs_worker.pl - Worker script that will process background jobs
 
 =head1 DESCRIPTION
 
-This script will connect to the Stomp server (RabbitMQ) and subscribe to the queues passed in parameter (or the 'default' queue),
-or if a Stomp server is not active it will poll the database every 10s for new jobs in the passed queue.
+This script will poll the database every 10s for new jobs in the passed queue (or the 'default' queue).
 
 You can specify some queues only (using --queue, which is repeatable) if you want to run several workers that will handle their own jobs.
 
@@ -85,86 +84,29 @@ unless (@queues) {
     push @queues, 'default';
 }
 
-my $conn;
-try {
-    $conn = Koha::BackgroundJob->connect;
-} catch {
-    warn sprintf "Cannot connect to the message broker, the jobs will be processed anyway (%s)", $_;
-};
-
 my $pm = Parallel::ForkManager->new($max_processes);
 
-if ( $conn ) {
-    # FIXME cf note in Koha::BackgroundJob about $namespace
-    my $namespace = C4::Context->config('memcached_namespace');
-    for my $queue (@queues) {
-        $conn->subscribe(
-            {
-                destination      => sprintf( "/queue/%s-%s", $namespace, $queue ),
-                ack              => 'client',
-                'prefetch-count' => 1,
-            }
-        );
-    }
-}
 while (1) {
-    if ( $conn ) {
-        my $frame = $conn->receive_frame;
-        if ( !defined $frame ) {
-            # maybe log connection problems
-            next;    # will reconnect automatically
-        }
-
+    my $jobs = Koha::BackgroundJobs->search({ status => 'new', queue => \@queues });
+    while ( my $job = $jobs->next ) {
         my $args = try {
-            my $body = $frame->body;
-            decode_json($body); # TODO Should this be from_json? Check utf8 flag.
+            $job->json->decode($job->data);
         } catch {
-            Koha::Logger->get({ interface => 'worker' })->warn(sprintf "Frame not processed - %s", $_);
+            Koha::Logger->get({ interface => 'worker' })->warn(sprintf "Cannot decode data for job id=%s", $job->id);
+            $job->status('failed')->store;
             return;
-        } finally {
-            $conn->ack( { frame => $frame } );
         };
 
         next unless $args;
 
-        # FIXME This means we need to have create the DB entry before
-        # It could work in a first step, but then we will want to handle job that will be created from the message received
-        my $job = Koha::BackgroundJobs->search( { id => $args->{job_id}, status => 'new' } )->next;
-
-        unless( $job ) {
-            Koha::Logger->get( { interface => 'worker' } )
-                ->warn( sprintf "Job %s not found, or has wrong status", $args->{job_id} );
-            next;
-        }
-
         $pm->start and next;
         srand();    # ensure each child process begins with a new seed
-        process_job( $job, $args );
+        process_job( $job, { job_id => $job->id, %$args } );
         $pm->finish;
 
-    } else {
-        my $jobs = Koha::BackgroundJobs->search({ status => 'new', queue => \@queues });
-        while ( my $job = $jobs->next ) {
-            my $args = try {
-                $job->json->decode($job->data);
-            } catch {
-                Koha::Logger->get({ interface => 'worker' })->warn(sprintf "Cannot decode data for job id=%s", $job->id);
-                $job->status('failed')->store;
-                return;
-            };
-
-            next unless $args;
-
-            $pm->start and next;
-            srand();    # ensure each child process begins with a new seed
-            process_job( $job, { job_id => $job->id, %$args } );
-            $pm->finish;
-
-        }
-        sleep 10;
     }
+    sleep 10;
 }
-$conn->disconnect;
 $pm->wait_all_children;
 
 sub process_job {

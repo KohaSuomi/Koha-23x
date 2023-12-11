@@ -44,9 +44,7 @@ How many jobs to commit per batch. Defaults to 10, will commit after .1 seconds 
 
 =head1 DESCRIPTION
 
-This script will connect to the Stomp server (RabbitMQ) and subscribe to the Elasticsearch queue, processing batches every second.
-If a Stomp server is not active it will poll the database every 10s for new jobs in the Elasticsearch queue
-and process them in batches every second.
+This script will poll the database every 10s for new jobs in the Elasticsearch queue and process them in batches every second.
 
 =cut
 
@@ -77,74 +75,19 @@ warn "Not using Elasticsearch" unless C4::Context->preference('SearchEngine') eq
 
 my $logger = Koha::Logger->get({ interface =>  'worker' });
 
-my $conn;
-try {
-    $conn = Koha::BackgroundJob->connect;
-} catch {
-    warn sprintf "Cannot connect to the message broker, the jobs will be processed anyway (%s)", $_;
-};
-
-if ( $conn ) {
-    # FIXME cf note in Koha::BackgroundJob about $namespace
-    my $namespace = C4::Context->config('memcached_namespace');
-    $conn->subscribe(
-        {
-            destination      => sprintf( "/queue/%s-%s", $namespace, 'elastic_index' ),
-            ack              => 'client',
-            'prefetch-count' => 1,
-        }
-    );
-}
 my $biblio_indexer = Koha::SearchEngine::Indexer->new({ index => $Koha::SearchEngine::BIBLIOS_INDEX });
 my $auth_indexer = Koha::SearchEngine::Indexer->new({ index => $Koha::SearchEngine::AUTHORITIES_INDEX });
 my @jobs = ();
 
 while (1) {
 
-    if ( $conn ) {
-        my $frame = $conn->receive_frame;
-        if ( !defined $frame ) {
-            # maybe log connection problems
-            next;    # will reconnect automatically
-        }
-
-        my $args = try {
-            my $body = $frame->body;
-            decode_json($body); # TODO Should this be from_json? Check utf8 flag.
-        } catch {
-            $logger->warn(sprintf "Frame not processed - %s", $_);
-            return;
-        } finally {
-            $conn->ack( { frame => $frame } );
-        };
-
-        next unless $args;
-
-        # FIXME This means we need to have create the DB entry before
-        # It could work in a first step, but then we will want to handle job that will be created from the message received
-        my $job = Koha::BackgroundJobs->search( { id => $args->{job_id}, status => 'new' } )->next;
-
-        unless ($job) {
-            $logger->warn( sprintf "Job %s not found, or has wrong status", $args->{job_id} );
-            next;
-        }
-
-        push @jobs, $job;
-        if ( @jobs >= $batch_size || !$conn->can_read( { timeout => '0.1' } ) ) {
-            commit(@jobs);
-            @jobs = ();
-        }
-
-    } else {
         @jobs = Koha::BackgroundJobs->search(
             { status => 'new', queue => 'elastic_index' } )->as_list;
         commit(@jobs);
         @jobs = ();
         sleep 10;
-    }
 
 }
-$conn->disconnect;
 
 sub commit {
     my (@jobs) = @_;
