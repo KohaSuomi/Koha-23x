@@ -229,8 +229,8 @@ sub getLanguages {
             $language_subtag_registry->{iso639_2_code} = $language_descriptions->{iso639_2_code};
             # fill in the native description of the language, as well as the current language's translation of that if it exists
             if ($native_description) {
-                $language_subtag_registry->{language_description} = $native_description;
-                $language_subtag_registry->{language_description}.=" ($language_descriptions->{description})" if $language_descriptions->{description};
+                $language_subtag_registry->{language_description} = $language_descriptions->{description} if $language_descriptions->{description};
+                $language_subtag_registry->{language_description}.=" ($native_description)";
             }
             else {
                 $language_subtag_registry->{language_description} = $language_descriptions->{description};
