@@ -742,9 +742,9 @@ sub version_from_file {
 sub get_db_entries {
     my $db_revs_dir;
     if ( $ENV{'BUILD_DIR'} ) {
-       $db_revs_dir = $ENV{'BUILD_DIR'} . '/installer/data/mysql/atomicupdate/';
+       $db_revs_dir = $ENV{'BUILD_DIR'} . '/installer/data/mysql/db_revs';
     } else {
-       $db_revs_dir = C4::Context->config('intranetdir') . '/installer/data/mysql/atomicupdate/';
+       $db_revs_dir = C4::Context->config('intranetdir') . '/installer/data/mysql/db_revs';
     }
     opendir my $dh, $db_revs_dir or die "Cannot open $db_revs_dir dir ($!)";
     my @files = sort grep { m|\.pl$| && ! m|skeleton\.pl$| } readdir $dh;
