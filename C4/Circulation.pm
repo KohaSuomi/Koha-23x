@@ -3762,12 +3762,6 @@ sub SendCirculationAlert {
     my $schema = Koha::Database->new->schema;
     my @transports = keys %{ $borrower_preferences->{transports} };
 
-    # From the MySQL doc:
-    # LOCK TABLES is not transaction-safe and implicitly commits any active transaction before attempting to lock the tables.
-    # If the LOCK/UNLOCK statements are executed from tests, the current transaction will be committed.
-    # To avoid that we need to guess if this code is execute from tests or not (yes it is a bit hacky)
-    my $do_not_lock = ( exists $ENV{_} && $ENV{_} =~ m|prove| ) || $ENV{KOHA_TESTING};
-
     for my $mtt (@transports) {
         my $letter =  C4::Letters::GetPreparedLetter (
             module => 'circulation',
@@ -3778,18 +3772,17 @@ sub SendCirculationAlert {
             tables => $tables,
         ) or next;
 
-        C4::Context->dbh->do(q|LOCK TABLE message_queue READ|) unless $do_not_lock;
-        C4::Context->dbh->do(q|LOCK TABLE message_queue WRITE|) unless $do_not_lock;
         my $message = C4::Message->find_last_message($borrower, $type, $mtt);
         unless ( $message ) {
-            C4::Context->dbh->do(q|UNLOCK TABLES|) unless $do_not_lock;
             my $patron = Koha::Patrons->find($borrower->{borrowernumber});
             C4::Message->enqueue($letter, $patron, $mtt);
         } else {
+            $message->{status} = 'processing';
+            $message->update;
             $message->append($letter);
+            $message->{status} = 'pending';
             $message->update;
         }
-        C4::Context->dbh->do(q|UNLOCK TABLES|) unless $do_not_lock;
     }
 
     return;
