@@ -68,7 +68,7 @@ my $strsth =
             biblioitems.collectionvolume,
             biblioitems.editionstatement,
             biblioitems.number,
-			biblioitems.publicationyear,
+			biblio.copyrightdate AS 'publicationyear',
 
             biblio.title,
             biblio.author,
