@@ -1305,6 +1305,7 @@
             hold_table_settings = [% TablesSettings.GetTableSettings( 'circ', 'holds', 'patron_holds_table', 'json' ) | $raw %];
             KohaTable("patron_holds_table", {
                 "bPaginate":true,
+                "sPaginationType": 'full_numbers',
                 "bKohaColumnsUseNames": true,
            }, hold_table_settings);
         });
@@ -1385,6 +1386,7 @@
 
             var my_table = $("#requestspecific").dataTable($.extend(true, {}, dataTablesDefaults, {
                 'bPaginate': true,
+                "sPaginationType": 'full_numbers',
                 "sDom": '<"top pager"ilf>t',
             }));
 
