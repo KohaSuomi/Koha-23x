@@ -1,0 +1,313 @@
+[% USE raw %]
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% USE Branches %]
+[% USE Categories %]
+[% USE KohaDates %]
+[% USE ItemTypes %]
+[% PROCESS 'html_helpers.inc' %]
+
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Batch modify holds &rsaquo; Tools &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("css/humanmsg.css") | $raw %]
+</head>
+
+<body id="tools_batch_extend_due_dates" class="tools">
+    [% WRAPPER 'header.inc' %]
+    [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+    [% WRAPPER 'sub-header.inc' %]
+    <nav id="breadcrumbs" aria-label="Breadcrumb" class="breadcrumb">
+        <ol>
+            <li>
+                <a href="/cgi-bin/koha/mainpage.pl">Home</a>
+            </li>
+            <li>
+                <a href="/cgi-bin/koha/tools/tools-home.pl">Tools</a>
+            </li>
+            <li>
+                <a href="#" aria-current="page">Batch modify holds</a>
+            </li>
+        </ol>
+    </nav>
+    [% END %]
+
+    <div class="main container-fluid">
+        <div class="row">
+            <div class="col-sm-10 col-sm-push-2">
+                <main>
+
+                    <h1>Batch modify holds</h1>
+
+                    [% IF view == 'form' %]
+                        <form method="post" action="/cgi-bin/koha/tools/batch_modify_holds.pl" id="modify_holds_form">
+                            <fieldset class="rows">
+                                <legend>Hold search criteria:</legend>
+                                <span class="hint">NOTE! Column patron_expiration_date is used as a main filter for expiration date field. Otherwise column expirationdate is used.</span>
+                                <ol>
+                                    <li>
+                                        <label for="suspend_until">Expiration date:</label>
+                                        <li>
+                                            <label for="expirationdate_from">From</label>
+                                            <input type="text" size="10" id="from" name="expirationdate_from" class="flatpickr" data-date_to="to" />
+                                        </li>
+                                        <li>
+                                            <label for="expirationdate_to">To</label>
+                                            <input type="text" size="10" id="to" name="expirationdate_to" class="flatpickr"/>
+                                        </li>
+                                    </li>
+                                    <li>
+                                        <label for="branchcodes">Libraries:</label>
+                                        <select name="branchcodes" id="branchcodes" multiple="multiple">
+                                            [% PROCESS options_for_libraries libraries => Branches.all() %]
+                                        </select>
+                                    </li>
+                                    <li>
+                                        <label for="found_status">Found status:</label>
+                                        <select name="found_status" id="found_status" multiple="multiple">
+                                            <option value="NULL">No status</option>
+                                            <option value="T">In transit</option>
+                                            <option value="P">In processing</option>
+                                            <option value="W">Waiting</option>
+                                        </select>
+                                    </li>
+                                    <li>
+                                        <label for="suspend_status">Suspended:</label>
+                                        <select name="suspend_status" id="suspend_status">
+                                            <option value="none" selected="selected"></option>
+                                            <option value="0">Not suspended</option>
+                                            <option value="1">Suspended</option>
+                                        </select>
+                                    </li>
+                                    <li>
+                                        <label for="suspend_until">Suspended until:</label>
+                                        <li>
+                                            <label for="suspend_until_from">From</label>
+                                            <input type="text" size="10" id="from" name="suspend_until_from" class="flatpickr" data-date_to="to" />
+                                        </li>
+                                        <li>
+                                            <label for="suspend_until_to">To</label>
+                                            <input type="text" size="10" id="to" name="suspend_until_to" class="flatpickr"/>
+                                        </li>
+                                    </li>
+                                    <li>
+                                        <label for="reservenotes">Hold note:</label>
+                                        <input type="text" id="reservenotes" name="reservenotes"/>
+                                    </li>
+                                </ol>
+                            </fieldset>
+                            <fieldset class="action">
+                                <input type="hidden" name="op" value="list"/>
+                                <input type="submit" class="btn btn-primary" value="Continue"/>
+                                <a class="cancel" href="/cgi-bin/koha/tools/tools-home.pl">Cancel</a>
+                            </fieldset>
+                        </form> <!-- /#modify_holds_form -->
+                    [% ELSIF view == 'list' %]
+                        <form action="/cgi-bin/koha/tools/batch_modify_holds.pl" method="post" id="process">
+                        [% IF holds.count %]
+                            <div class="page-section">
+                                <div class="btn-toolbar selections-toolbar">
+                                    <a id="selectall" href="#"><i class="fa fa-check"></i> Select all</a>
+                                    <a id="clearall" href="#"><i class="fa fa-remove"></i> Clear all</a>
+                                </div>
+                                <table id="found_holds">
+                                    <thead>
+                                        <tr>
+                                            <th>&nbsp;</th>
+                                            <th>Expiration date</th>
+                                            <th>Patron expiration date</th>
+                                            <th>Status</th>
+                                            <th>Hold pickup library</th>
+                                            <th>Suspended</th>
+                                            <th>Suspended until</th>
+                                            <th>Note</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        [% FOREACH hold IN holds %]
+                                            <tr>
+                                                <td><input type="checkbox" name="hold_id" value="[% hold.reserve_id | html %]"/></td>
+                                                <td>[% hold.expirationdate | $KohaDates %]</td>
+                                                <td>[% hold.patron_expiration_date | $KohaDates %]</td>
+                                                <td class="found_status" data-found="[% hold.found | html %]">
+                                                    [% IF hold.found == "T" %]
+                                                        In transit
+                                                    [% ELSIF hold.found == "P" %]
+                                                        In processing
+                                                    [% ELSIF hold.found == "W" %]
+                                                        Waiting
+                                                    [% ELSE %]
+                                                        No status
+                                                    [% END %]
+                                                </td>
+                                                <td>[% Branches.GetName( hold.branchcode ) | html %]</td>
+                                                <td>[% IF hold.suspend %]Yes[% ELSE %]No[% END %]</td>
+                                                <td>[% hold.suspend_until | $KohaDates %]</td>
+                                                <td>[% hold.reservenotes | html %]</td>
+                                            </tr>
+                                        [% END %]
+                                    </tbody>
+                                </table> <!-- /#holds -->
+                            </div> <!-- /.page-section -->
+                            <h2>Modify holds</h2>
+                            <table id="hold_modifies">
+                                <thead>
+                                    <tr>
+                                        <th>New expiration date</th>
+                                        <th>New pickup library</th>
+                                        <th>Suspend holds</th>
+                                        <th>Suspend until</th>
+                                        <th>New reserve note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input type="text" id="new_expiration_date" name="new_expiration_date" class="flatpickr" data-flatpickr-futuredate="true"/>
+                                        </td>
+                                        <td>
+                                            <select name="new_pickup_loc" id="new_pickup_loc">
+                                                [% PROCESS options_for_libraries libraries => Branches.pickup_locations({ selected => hold.branchcode }) %]
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select id="new_suspend_status" name="new_suspend_status">
+                                                <option value="" selected="selected"></option>
+                                                <option value="not_suspended">Not suspended</option>
+                                                <option value="suspend">Suspend</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="text" id="new_suspend_date" name="new_suspend_date" class="flatpickr" data-flatpickr-futuredate="true"/>
+                                        </td>
+                                        <td>
+                                           <input type="text" id="new_reserve_note" name="new_reserve_note"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table> <!-- /#hold_modifies -->
+                            <fieldset class="action">
+                                <input type="hidden" name="op" value="modify"/>
+                                <input type="submit" class="btn btn-primary" value="Modify selected holds"/>
+                                <a class="cancel" href="/cgi-bin/koha/tools/batch_modify_holds.pl">Cancel</a>
+                            </fieldset>
+                        </form> <!-- /#process -->
+                        [% ELSE %]
+                            <div class="dialog message">
+                                No holds were found for the selected filters.
+                            </div>
+                            <a class="cancel" href="/cgi-bin/koha/tools/batch_modify_holds.pl">Return</a>
+                        [% END %]
+                    [% ELSIF view == 'report' %]
+                        <div class="dialog message">
+                            Holds have been modified!
+                        </div>
+                        <div class="page-section">
+                            <div class="btn-toolbar selections-toolbar">
+                                <a id="selectall" href="#"><i class="fa fa-check"></i> Select all</a>
+                                <a id="clearall" href="#"><i class="fa fa-remove"></i> Clear all</a>
+                            </div>
+                            <table id="holds">
+                                <thead>
+                                    <tr>
+                                        <th>Expiration date</th>
+                                        <th>Hold pickup library</th>
+                                        <th>Suspended</th>
+                                        <th>Suspended until</th>
+                                        <th>Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    [% FOREACH hold IN updated_holds %]
+                                        <tr>
+                                            <td>[% hold.expirationdate | $KohaDates %]</td>
+                                            <td>[% Branches.GetName( hold.branchcode ) | html %]</td>
+                                            <td>[% IF hold.suspend == 0 %]No[% ELSE %]Yes[% END %]</td>
+                                            <td>[% hold.suspend_until | $KohaDates %]</td>
+                                            <td>[% hold.reservenotes | html %]</td>
+                                        </tr>
+                                    [% END %]
+                                </tbody>
+                            </table> <!-- /#holds -->
+                        </div> <!-- /.page-section -->
+                        <a class="cancel" href="/cgi-bin/koha/tools/batch_modify_holds.pl">Return to batch hold modification</a>
+                    [% END %]
+                </main>
+            </div> <!-- /.col-sm-10 col-sm-push-2 -->
+
+
+            <div class="col-sm-2 col-sm-pull-10">
+                <aside>
+                    [% INCLUDE 'tools-menu.inc' %]
+                </aside>
+            </div> <!-- /.col-sm-2 col-sm-pull-10 -->
+        </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+    [% Asset.js("js/tools-menu.js") | $raw %]
+    [% INCLUDE 'calendar.inc' %]
+    [% INCLUDE 'datatables.inc' %]
+    [% Asset.js("lib/jquery/plugins/humanmsg.js") | $raw %]
+    <script>
+        $(document).ready(function() {
+
+            $("#selectall").click(function(e){
+                e.preventDefault();
+                $("#found_holds input[type='checkbox']").each(function(){
+                    $(this).prop("checked", true);
+                });
+            });
+
+            $("#clearall").click(function(e){
+                e.preventDefault();
+                $("#found_holds input[type='checkbox']").each(function(){
+                    $(this).prop("checked", false);
+                });
+            });
+
+            $("#selectall").click();
+
+            $("#found_holds").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aoColumnDefs": [
+                    { "aTargets": [0], "bSortable": false, "bSearchable": false },
+                ],
+                "sDom": 't',
+                "aaSorting": [],
+                "bPaginate": false
+            }));
+
+            $("#process").on('submit', function(e) {
+                var reserve_ids = $("input[type=checkbox][name='hold_id']:checked");
+
+                var new_suspend_status = $("#new_suspend_status").val();
+                var new_suspend_date = $("#new_suspend_date").val();
+
+                if ( reserve_ids.length == 0 ) {
+                    e.preventDefault();
+                    alert(_("Please select at least one hold to process."));
+                    return false;
+                }
+                if( new_suspend_status ){
+                    reserve_ids.each(function(){
+                        if($(this).parents("tr").children(".found_status").data("found") != ""){
+                            e.preventDefault();
+                            alert(_("One or more holds have found status and can't be suspended."));
+                            return false;
+                        }
+                    })
+                }
+                if( ( !new_suspend_status || new_suspend_status == "not_suspended") && new_suspend_date ){
+                    e.preventDefault();
+                    alert(_('You have to suspend holds if new suspend until date is set.'));
+                    return false;
+                }
+
+                return true;
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]
