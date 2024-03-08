@@ -105,6 +105,7 @@ while (1) {
         $pm->finish;
 
     }
+    $pm->reap_finished_children;
     sleep 10;
 }
 $pm->wait_all_children;
