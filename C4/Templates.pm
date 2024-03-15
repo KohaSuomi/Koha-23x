@@ -23,7 +23,7 @@ use List::MoreUtils qw( uniq );
 # You should have received a copy of the GNU General Public License
 # along with Koha; if not, see <http://www.gnu.org/licenses>.
 
-=head1 NAME 
+=head1 NAME
 
 C4::Templates - Object for manipulating templates for use with Koha
 
@@ -124,6 +124,7 @@ sub output {
 
     my $data;
     binmode( STDOUT, ":encoding(UTF-8)" );
+    $Template::Directive::WHILE_MAX = 1500;
     $template->process( $self->filename, $vars, \$data )
       || die "Template process failed: ", $template->error();
     return $data;

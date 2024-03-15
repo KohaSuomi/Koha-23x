@@ -76,6 +76,7 @@ sub process_tt {
 
         $schema->txn_begin;
         try {
+	    $Template::Directive::WHILE_MAX = 1500;
             $tt->process( \$template, $vars, \$output );
         } catch {
             croak "ERROR PROCESSING TEMPLATE: $_ :: " . $template->error();
