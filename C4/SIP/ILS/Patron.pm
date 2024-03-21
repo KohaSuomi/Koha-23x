@@ -67,11 +67,19 @@ sub new {
     my ($day, $month, $year) = (localtime)[3,4,5];
     my $today    = sprintf '%04d-%02d-%02d', $year+1900, $month+1, $day;
     my $expired  = ($today gt $kp->{dateexpiry}) ? 1 : 0;
+    my $locked   = $patron->account_locked;
     if ($expired) {
         if ($kp->{opacnote} ) {
             $kp->{opacnote} .= q{ };
         }
         $kp->{opacnote} .= 'PATRON EXPIRED';
+    }
+    elsif ($locked) {
+        if ($kp->{opacnote} ) {
+            $kp->{opacnote} .= q{ };
+        }
+        $kp->{opacnote} .= 'ACCOUNT LOCKED';
+        $expired = 1;
     }
     my %ilspatron;
     my $adr     = _get_address($kp);
