@@ -656,6 +656,47 @@ if ($biblionumber) {
     }
 }
 
+sub process_before_addbiblio_plugins {
+    my ($args) = @_;
+    my @plugins = Koha::Plugins->new()->GetPlugins({ method => 'before_addbiblio_errors' });
+    my @errors;
+
+    foreach my $plugin (@plugins) {
+        my $error = Koha::Plugins::Handler->run({
+	    cgi => $args->{input},
+            class => ref $plugin,
+            method => 'before_addbiblio_errors',
+            params => {
+                biblionumber => $args->{biblionumber},
+                record => $args->{record}
+            }
+        });
+        if (defined($error) && scalar(@{$error}) > 0) {
+            foreach my $err (@{$error}) {
+                push @errors, $error;
+            }
+        }
+    }
+
+    if (scalar(@errors) > 0) {
+        my $template = $args->{template};
+        $template->param(
+            title => $args->{record}->title, # FIXME
+            before_addbiblio_errors => @errors,
+            popup => $args->{mode},
+            frameworkcode => $args->{frameworkcode},
+            itemtype => $args->{frameworkcode},
+            borrowernumber => $args->{loggedinuser},
+            biblionumber => $args->{biblionumber},
+            tab => scalar $args->{input}->param('tab')
+            );
+        $template->{'VARS'}->{'searchid'} = $args->{searchid};
+        build_tabs ($template, $args->{record}, $args->{dbh}, $args->{encoding}, $args->{input});
+        output_html_with_http_headers $args->{input}, $args->{cookie}, $template->output;
+        exit;
+    }
+}
+
 #-------------------------------------------------------------------------------------
 if ( $op eq "addbiblio" ) {
 #-------------------------------------------------------------------------------------
@@ -665,6 +706,20 @@ if ( $op eq "addbiblio" ) {
     # getting html input
     my @params = $input->multi_param();
     $record = TransformHtmlToMarc( $input, 1 );
+
+    process_before_addbiblio_plugins({
+        biblionumber => $biblionumber,
+        record => $record,
+        input => $input,
+        mode => $mode,
+        frameworkcode => $frameworkcode,
+        loggedinuser => $loggedinuser,
+        template => $template,
+        dbh => $dbh,
+        encoding => $encoding,
+        searchid => $searchid,
+        cookie => $cookie }) if ($record ne '-1');
+
     # check for a duplicate
     my ( $duplicatebiblionumber, $duplicatetitle );
     if ( !$is_a_modif ) {
