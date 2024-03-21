@@ -254,6 +254,7 @@ warn 'found ' . $upcoming_mem_expires->count . ' soon expiring members'
 # main loop
 my ( $count_skipped, $count_renewed, $count_enqueued ) = ( 0, 0, 0 );
 while ( my $recent = $upcoming_mem_expires->next ) {
+    next if (!$recent->notice_email_address);
     if ( $active && !$recent->is_active( { months => $active } ) ) {
         $count_skipped++;
         next;
