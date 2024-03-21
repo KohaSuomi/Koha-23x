@@ -134,6 +134,7 @@
                     <li><a id="csv" href="/cgi-bin/koha/reports/guided_reports.pl?reports=1&phase=Export&amp;format=csv&amp;report_id=[% id | html %]&amp;reportname=[% name |uri %][% PROCESS params %]">[% PROCESS 'delimiter_text.inc' %]</a></li>
                     <li><a id="tab" href="/cgi-bin/koha/reports/guided_reports.pl?reports=1&phase=Export&amp;format=tab&amp;report_id=[% id | html %]&amp;reportname=[% name |uri %][% PROCESS params %]">Tab separated text</a></li>
                     <li><a id="ods" href="/cgi-bin/koha/reports/guided_reports.pl?reports=1&phase=Export&amp;format=ods&amp;report_id=[% id | html %]&amp;reportname=[% name |uri %][% PROCESS params %]">Open Document Spreadsheet</a></li>
+                    <li><a id="finna" href="/cgi-bin/koha/reports/guided_reports.pl?reports=1&phase=Export&amp;format=finna&amp;report_id=[% id | html %]&amp;reportname=[% name |uri %][% PROCESS params %]">Finna JSON</a></li>
                     [% IF processed_notice_title %]
                     <li><a id="template" href="/cgi-bin/koha/reports/guided_reports.pl?reports=1&phase=Export&amp;format=template&amp;report_id=[% id | html %]&amp;template=[% template_id | html %]&amp;reportname=[% name |uri %][% PROCESS params %]">Rendered template ([% processed_notice_title | html %])</a></li>
                     [% END %]
