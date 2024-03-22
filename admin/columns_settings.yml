@@ -1713,7 +1713,7 @@ modules:
             -
               columnname: print_slip
 
-	holds:
+    holds:
       kohasuomi-holds-to-pull:
         columns:
             -
