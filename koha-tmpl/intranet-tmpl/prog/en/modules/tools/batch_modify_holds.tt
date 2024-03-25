@@ -61,7 +61,7 @@
                                     <li>
                                         <label for="branchcodes">Libraries:</label>
                                         <select name="branchcodes" id="branchcodes" multiple="multiple">
-                                            [% PROCESS options_for_libraries libraries => Branches.all() %]
+                                            [% PROCESS options_for_libraries libraries => Branches.all(selected => "") %]
                                         </select>
                                     </li>
                                     <li>
@@ -107,6 +107,7 @@
                     [% ELSIF view == 'list' %]
                         <form action="/cgi-bin/koha/tools/batch_modify_holds.pl" method="post" id="process">
                         [% IF holds.count %]
+                            <div><p>Found [% holds.count | html %][% IF holds.count > 1 %] holds [% ELSE %] hold [% END %]to modify.</p><div>
                             <div class="page-section">
                                 <div class="btn-toolbar selections-toolbar">
                                     <a id="selectall" href="#"><i class="fa fa-check"></i> Select all</a>
@@ -118,6 +119,8 @@
                                             <th>&nbsp;</th>
                                             <th>Expiration date</th>
                                             <th>Patron expiration date</th>
+                                            <th>Title</title>
+                                            <th>Barcode</th>
                                             <th>Status</th>
                                             <th>Hold pickup library</th>
                                             <th>Suspended</th>
@@ -127,10 +130,12 @@
                                     </thead>
                                     <tbody>
                                         [% FOREACH hold IN holds %]
-                                            <tr>
+                                            <tr [% IF hold.found %]class="highlighted-row"[% END %]>
                                                 <td><input type="checkbox" name="hold_id" value="[% hold.reserve_id | html %]"/></td>
                                                 <td>[% hold.expirationdate | $KohaDates %]</td>
                                                 <td>[% hold.patron_expiration_date | $KohaDates %]</td>
+                                                <td><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% hold.item.biblio.biblionumber | uri %]">[% hold.item.biblio.title | html %]</a></td>
+                                                <td><a href="/cgi-bin/koha/catalogue/moredetail.pl?itemnumber=[% hold.itemnumber | uri %]&biblionumber=[% hold.item.biblio.biblionumber | uri %]&bi=[% hold.item.biblio.biblionumber | uri %]#item[% hold.itemnumber | uri %]">[% hold.item.barcode | html %]</a></td>
                                                 <td class="found_status" data-found="[% hold.found | html %]">
                                                     [% IF hold.found == "T" %]
                                                         In transit
@@ -168,8 +173,9 @@
                                             <input type="text" id="new_expiration_date" name="new_expiration_date" class="flatpickr" data-flatpickr-futuredate="true"/>
                                         </td>
                                         <td>
-                                            <select name="new_pickup_loc" id="new_pickup_loc">
-                                                [% PROCESS options_for_libraries libraries => Branches.pickup_locations({ selected => hold.branchcode }) %]
+                                            <select id="new_pickup_loc" name="new_pickup_loc">
+                                                <option value="" selected="selected"></option>
+                                                [% PROCESS options_for_libraries libraries => Branches.pickup_locations(selected = "") %]
                                             </select>
                                         </td>
                                         <td>
@@ -281,6 +287,7 @@
             $("#process").on('submit', function(e) {
                 var reserve_ids = $("input[type=checkbox][name='hold_id']:checked");
 
+                var new_pickup_loc = $("#new_pickup_loc").val();
                 var new_suspend_status = $("#new_suspend_status").val();
                 var new_suspend_date = $("#new_suspend_date").val();
 
@@ -289,11 +296,16 @@
                     alert(_("Please select at least one hold to process."));
                     return false;
                 }
-                if( new_suspend_status ){
+                if( new_pickup_loc || new_suspend_status ){
                     reserve_ids.each(function(){
                         if($(this).parents("tr").children(".found_status").data("found") != ""){
                             e.preventDefault();
-                            alert(_("One or more holds have found status and can't be suspended."));
+                            if( new_suspend_status ){
+                                alert(_("One or more holds have found status and can't be suspended."));
+                            }
+                            if( new_pickup_loc ){
+                                alert(_("One or more holds have found status and their pick up location can't be changed."));
+                            }
                             return false;
                         }
                     })

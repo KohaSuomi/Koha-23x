@@ -116,7 +116,12 @@ elsif ( $op eq 'list' ) {
         }
     }
 
-    my $holds = Koha::Holds->search( $search_params );
+    my $holds = Koha::Holds->search(
+        $search_params,
+        {
+            join => ["item"]
+        }
+    );
 
     $template->param(
         holds => $holds,
@@ -142,7 +147,7 @@ if ( $op eq 'modify' ) {
             $hold->expirationdate($new_expiration_date)->store;
         }
 
-        unless( $hold->branchcode eq $new_pickup_loc){
+        if($new_pickup_loc && ($hold->branchcode ne $new_pickup_loc)){
             $hold->branchcode($new_pickup_loc)->store;
         }
 
