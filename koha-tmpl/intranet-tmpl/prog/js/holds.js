@@ -721,7 +721,11 @@ async function load_holds_queue() {
             },
             {
                 "mDataProp": function( data, type, full, meta) {
-                    return '<input class="printholdslip" type="button" name="printholdslip" value="'+__("Print slip")+'" data-reserve_id="'+data.hold_id+'">';
+                    if ( data.status == 'W' || data.status == 'T' ) {
+                        return '<input class="printholdslip" type="button" name="printholdslip" value="'+__("Print slip")+'" data-reserve_id="'+data.hold_id+'">';
+                    } else {
+                        return null;
+                    }
                 }
             },
         ]
