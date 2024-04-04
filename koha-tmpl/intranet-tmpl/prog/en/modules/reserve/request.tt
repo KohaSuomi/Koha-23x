@@ -1248,7 +1248,7 @@
                             <input type="submit" class="btn btn-primary" name="submit" value="Update hold(s)" />
                         </div>
                         <div class="btn-group">
-                            <button class="cancel_selected_holds" data-bulk="true"></button>
+                            <button class="btn cancel_selected_holds" data-bulk="true"></button>
                         </div>
                     <fieldset id="cancellation-reason-fieldset" class="action" style="display:none">
                         [% SET hold_cancellation = AuthorisedValues.GetAuthValueDropbox('HOLD_CANCELLATION') %]
@@ -1275,7 +1275,7 @@
                                 <th>Expiration</th>
                                 <th>Pickup library</th>
                                 <th>Details</th>
-                                <th><img src="[% interface | html %]/[% theme | html %]/img/go-bottom.png" alt="Toggle set to lowest priority" /></th>
+                                <th><i class="fa fa-lg fa-rotate-90 fa-fast-forward" title="Toggle set to lowest priority"></i></th>
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
                                 <th>Print hold/transfer slip</th>

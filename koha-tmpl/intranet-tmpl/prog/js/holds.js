@@ -572,10 +572,10 @@ async function load_holds_queue() {
                     if (data.status) {
                         return null;
                     }
-                    let buttons = '<a title="Move hold up" href="#" class="move-hold" data-move-hold="up" data-priority="'+data.priority+'" reserve_id="'+data.hold_id+'"><img src="/intranet-tmpl/prog/img/go-up.png" alt="Go up" /></a>';
-                    buttons += '<a title="Move hold to top" href="#" class="move-hold" data-move-hold="top" data-priority="'+data.priority+'" reserve_id="'+data.hold_id+'"><img src="/intranet-tmpl/prog/img/go-top.png" alt="Go top" /></a>';
-                    buttons += '<a title="Move hold to bottom" href="#" class="move-hold" data-move-hold="bottom" data-priority="'+data.priority+'" reserve_id="'+data.hold_id+'"><img src="/intranet-tmpl/prog/img/go-bottom.png" alt="Go bottom" /></a>';
-                    buttons += '<a title="Move hold down" href="#" class="move-hold" data-move-hold="down" data-priority="'+data.priority+'" reserve_id="'+data.hold_id+'"><img src="/intranet-tmpl/prog/img/go-down.png" alt="Go down" /></a>';
+                    let buttons = '<a class="hold-arrow move-hold" title="Move hold up" href="#" data-move-hold="up" data-priority="'+data.priority+'" reserve_id="'+data.hold_id+'"><i class="fa fa-lg icon-move-hold-up" aria-hidden="true"></i></a>';
+                    buttons += '<a class="hold-arrow move-hold" title="Move hold to top" href="#" data-move-hold="top" data-priority="'+data.priority+'" reserve_id="'+data.hold_id+'"><i class="fa fa-lg icon-move-hold-top" aria-hidden="true"></i></a>';
+                    buttons += '<a class="hold-arrow move-hold" title="Move hold to bottom" href="#" data-move-hold="bottom" data-priority="'+data.priority+'" reserve_id="'+data.hold_id+'"><i class="fa fa-lg icon-move-hold-bottom" aria-hidden="true"></i></a>';
+                    buttons += '<a class="hold-arrow move-hold" title="Move hold down" href="#" data-move-hold="down" data-priority="'+data.priority+'" reserve_id="'+data.hold_id+'"><i class="fa fa-lg icon-move-hold-down" aria-hidden="true"></i></a>';
                     return buttons;
                 }
             },
@@ -676,17 +676,17 @@ async function load_holds_queue() {
                 "mDataProp": function( data, type, full, meta) {
                     let link = 'request.pl?action=setLowestPriority&amp;borrowernumber='+data.patron_id+'&amp;biblionumber='+data.biblio_id+'&amp;reserve_id='+data.hold_id+'&amp;date='+data.hold_date+'';
                     if (data.lowest_priority) {
-                        return '<a href="'+link+'" class="unset-lowest-priority"><img src="/intranet-tmpl/prog/img/go-bottom.png" alt="Unset lowest priority" /></a>';
+                        return '<a href="'+link+'" class="hold-arrow" title="Unset lowest priority"><i class="fa fa-lg fa-rotate-90 icon-unset-lowest" aria-hidden="true"></i></a>';
                     } else if (data.item_id) {
                         return null
                     } else {
-                        return '<a href="'+link+'" class="set-lowest-priority"><img src="/intranet-tmpl/prog/img/go-down.png" alt="Set to lowest priority" /></a>';
+                        return '<a href="'+link+'" class="hold-arrow" title="Set lowest priority"><i class="fa fa-lg fa-rotate-90 icon-set-lowest" aria-hidden="true"></i></a>';
                     }
                 }
             },
             {
                 "mDataProp": function( data, type, full, meta) {
-                    return '<a class="btn btn-default btn-xs cancel-hold" reserve_id="'+data.hold_id+'"><i class="fa fa-trash" aria-hidden="true"></i> '+__("Cancel")+'</a>';
+                    return '<a class="cancel-hold" title="Cancel hold" reserve_id="'+data.hold_id+'"><i class="fa fa-trash" aria-label="Cancel hold"></i></a>';
                 }
             },
             {
@@ -732,7 +732,7 @@ async function load_holds_queue() {
     }));
     $('#holds-queue').on( 'draw.dt', function () {
         let multiselect = false;
-        var MSG_CANCEL_SELECTED = _("Cancel selected (%s)");
+        var MSG_CANCEL_SELECTED = $('.cancel_selected_holds').html().split("(")[0] + "(%s)";
         $('.cancel_selected_holds').html(MSG_CANCEL_SELECTED.format($('.holds_table .select_hold:checked').length));
         $('.holds_table .select_hold_all').click(function() {
             var table = $(this).parents('.holds_table');
