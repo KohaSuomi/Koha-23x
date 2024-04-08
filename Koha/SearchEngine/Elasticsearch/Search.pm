@@ -445,6 +445,7 @@ sub _convert_facets {
     my %type_to_label;
     my %label = (
         author         => 'Authors',
+        mtype          => 'MTypes',
         itype          => 'ItemTypes',
         location       => 'Location',
         'su-geo'       => 'Places',

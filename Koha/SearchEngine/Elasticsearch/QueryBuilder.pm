@@ -228,6 +228,7 @@ sub build_query {
     $res->{aggregations} = {
         author         => { terms => { field => "author__facet" , size => $size } },
         subject        => { terms => { field => "subject__facet", size => $size } },
+        mtype          => { terms => { field => "mtype__facet", size => $size} },
         itype          => { terms => { field => "itype__facet", size => $size} },
         location       => { terms => { field => "location__facet", size => $size } },
         'su-geo'       => { terms => { field => "su-geo__facet", size => $size} },

@@ -66,6 +66,9 @@
                             [% IF facets_loo.type_label_Series %]
                                 <span id="facet-series">Series</span>
                             [% END %]
+                            [% IF facets_loo.type_label_MTypes %]
+                                <span id="facet-mtypes">Record-level item types</span>
+                            [% END %]
                             [% IF facets_loo.type_label_ItemTypes %]
                                 <span id="facet-itemtypes">Item types</span>
                             [% END %]

@@ -827,6 +827,7 @@ ok(MARC::Record::new_from_xml($results_hashref->{biblioserver}->{RECORDS}->[0],'
                    'au' => { 'label_value' => "Authors" },
                 'ccode' => { 'label_value' => "CollectionCodes" },
         'holdingbranch' => { 'label_value' => "HoldingLibrary" },
+                'mtype' => { 'label_value' => "MTypes" },
                 'itype' => { 'label_value' => "ItemTypes" },
              'location' => { 'label_value' => "Location" },
                    'se' => { 'label_value' => "Series" },

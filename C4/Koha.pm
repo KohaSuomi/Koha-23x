@@ -421,6 +421,12 @@ sub getFacets {
                 sep   => ', ',
             },
             {
+                idx   => 'mtype',
+                label => 'MTypes',
+                tags  => [ qw/ 942c / ],
+                sep   => ', ',
+            },
+            {
                 idx   => 'itype',
                 label => 'ItemTypes',
                 tags  => [ qw/ 952y 942c / ],

@@ -1158,6 +1158,7 @@ sub getIndexes{
                     'issues',
                     'item',
                     'itemnumber',
+                    'mtype',
                     'itype',
                     'Local-classification',
                     'location',
