@@ -593,6 +593,14 @@ function CheckImportantSubfields(p){
     return total;
 }
 
+function checkItemtypeSubfield(p, itemtypes){
+    var itemtype = $(p).find("input[id^='tag_952_subfield_y']").val();
+    if(jQuery.inArray(itemtype, itemtypes) !== -1){
+        return true;
+    }
+    return false;
+}
+
 $(document).ready(function() {
     $("input.input_marceditor, input.indicator").addClass('noEnterSubmit');
     $(document).ajaxSuccess(function() {

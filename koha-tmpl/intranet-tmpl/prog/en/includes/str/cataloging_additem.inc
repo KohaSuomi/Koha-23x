@@ -1,9 +1,14 @@
 [% USE raw %]
+[% USE ItemTypes %]
 <!-- str/cataloging_additem.inc -->
 <script>
     var searchid = '[% searchid | html %]';
     var biblionumber = '[% biblionumber | html %]';
     var frameworkcode = '[% frameworkcode | html %]';
+    var itemtypes = [];
+    [% FOREACH it IN ItemTypes.Get() %]
+      itemtypes.push('[% it.itemtype %]');
+    [% END %]
     [% IF popup %]
       var popup = true;
     [% ELSE %]
@@ -20,6 +25,7 @@
     var MSG_CONFIRM_DELETE_ITEM = _("Are you sure you want to delete this item?");
     var MSG_CONFIRM_ADD_ITEM = _("Are you sure you want to add a new item? Any changes made on this page will be lost.");
     var MSG_CONFIRM_SAVE = _("Are you sure you want to save?");
+    var MSG_INVALID_ITEMTYPE = _("Itemtype is not valid. Use one of the following itemtypes:");
     var table_settings = [% TablesSettings.GetTableSettings( 'cataloguing', 'additem', 'itemst', 'json' ) | $raw %];
 </script>
 <!-- / str/cataloging_additem.inc -->

@@ -155,6 +155,7 @@ function CheckTemplateForm(f) {
 function Check(f) {
     var total_mandatory = CheckMandatorySubfields(f);
     var total_important = CheckImportantSubfields(f);
+    var valid_itemtypes = checkItemtypeSubfield(f, itemtypes);
     var alertString2;
     if (total_mandatory==0) {
         // Explanation about this line:
@@ -176,9 +177,15 @@ function Check(f) {
         alertString2 += "\n\n " + MSG_IMPORTANT_FIELDS_EMPTY.format(total_important);
         alertString2 += "\n\n " + MSG_CONFIRM_SAVE;
     }
+    if(!valid_itemtypes){
+        alertString2 = MSG_INVALID_ITEMTYPE;
+        jQuery.each(itemtypes, function(index, itemtype){
+            alertString2 += "\n- "+itemtype;
+        });
+    }
     if(alertString2){
-        if(total_mandatory){
-             alert(alertString2);
+        if(total_mandatory || valid_itemtypes){
+            alert(alertString2);
         }else{
             var a = confirm(alertString2);
             if( a ){
