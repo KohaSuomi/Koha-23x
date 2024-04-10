@@ -184,7 +184,7 @@ function Check(f) {
         });
     }
     if(alertString2){
-        if(total_mandatory || valid_itemtypes){
+        if(total_mandatory || !valid_itemtypes){
             alert(alertString2);
         }else{
             var a = confirm(alertString2);
