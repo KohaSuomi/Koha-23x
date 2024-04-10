@@ -1242,9 +1242,11 @@
                             <p><a href="/cgi-bin/koha/admin/background_jobs.pl?op=view&id=[% job_id | uri %]" title="View detail of the enqueued job">View detail of the enqueued job</a></p>
                         </div>
                     [% END %]
-                    <div id="existing_holds"><h2>Existing holds</h2></div>
+                    <form id="existing_holds" name="T[% time | html %]" action="modrequest.pl" method="post" style="display:block">
+                    <h2>Existing holds</h2>
                     <div id="toolbar" class="btn-toolbar">
                         <div class="btn-group">
+                            <input type="hidden" name="biblionumber" value="[% biblionumber | html %]"/>
                             <input type="submit" class="btn btn-primary" name="submit" value="Update hold(s)" />
                         </div>
                         <div class="btn-group">
@@ -1282,6 +1284,7 @@
                             </tr>
                         </thead>
                     </table>
+                    </form>
                 [% END # IF reserveloop %]
             [% END # UNLESS patron %]
 
