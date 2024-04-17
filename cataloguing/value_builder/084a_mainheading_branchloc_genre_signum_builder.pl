@@ -62,7 +62,7 @@ function Click$function_name(event) {
         // Do main heading
         // Actually we should also follow the bypass indicators here
 
-        var marc942f = resp.f942m;
+        var marc942m = resp.f942m;
 
         var marc100a = resp.f100a;
         var marc110a = resp.f110a;
