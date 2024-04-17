@@ -98,7 +98,7 @@ if (defined C4::Context->preference('SCOAllowCheckin')) {
 }
 
 my $issuerid = $loggedinuser;
-my ( $op, $patronlogin, $patronpw, $barcode, $confirmed, $newissues, $load_checkouts, $uibarcode, $checkinmessage) ) = (
+my ( $op, $patronlogin, $patronpw, $barcode, $confirmed, $newissues, $load_checkouts, $uibarcode, $checkinmessage) = (
     $query->param("op")             || '',
     $query->param("patronlogin")    || '',
     $query->param("patronpw")       || '',
@@ -242,7 +242,7 @@ if ( ( $op eq "checkin" && $uibarcode ) || $patron && $op eq "returnbook" && $al
     }
 }
 
-    
+
 elsif ( $patron && ( $op eq 'checkout' ) ) {
 
     my $item = Koha::Items->find( { barcode => $barcode } );
