@@ -27,15 +27,6 @@ my $builder = sub {
 <script type="text/javascript">
 //<![CDATA[
 
-function Blur$function_name(index) {
-    // No action
-}
-
-function Focus$function_name(subfield_managed, id, force) {
-    // Uncomment the below line to have the signum updated when the field gets focus
-    // return Clic$function_name(id);
-}
-
 function Click$function_name(event) {
 
     var bn = \$('input[name="biblionumber"]').val();
