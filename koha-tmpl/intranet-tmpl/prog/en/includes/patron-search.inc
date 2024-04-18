@@ -663,8 +663,18 @@
                 [% END %]
             }, typeof table_settings !== 'undefined' ? table_settings : null, 1, additional_filters);
 
-            $("#patron_search_form").on('submit', filter);
-            $("#patron_search_form").on('submit', update_search_type);
+            $("#patron_search_form").on('submit', function(e){
+                e.preventDefault();
+                update_search_type();
+                $("#empty-search-error").remove();
+                var searchfield = $.trim($("#search_patron_filter").val());
+                $("#search_patron_filter").val(searchfield);
+                if ( searchfield != '' ) {
+                    filter();
+                } else {
+                    $("#search_patron_filter").focus().after('<span id="empty-search-error" class="error">Please fill out this field.</span>');
+                }
+            });
             $(".filterByLetter").on("click",function(e){
                 e.preventDefault();
                 filterByFirstLetterSurname($(this).text(), true);
