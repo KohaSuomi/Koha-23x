@@ -686,7 +686,7 @@ async function load_holds_queue() {
             },
             {
                 "mDataProp": function( data, type, full, meta) {
-                    return '<a class="cancel-hold" title="Cancel hold" data-borrowernumber="'+data.patron_id+'" data-biblionumber="'+data.biblio_id+'" data-id="'+data.hold_id+'" href="request.pl?action=cancel&amp;borrowernumber='+data.patron_id+'&amp;biblionumber='+data.biblio_id+'&amp;reserve_id='+data.hold_id+'&amp;date='+data.hold_date+'"><i class="fa fa-trash" aria-label="Cancel hold"></i></a>';
+                    return '<a class="btn btn-default btn-xs cancel-hold" reserve_id="'+data.hold_id+'"><i class="fa fa-trash" aria-hidden="true"></i> '+__("Cancel")+'</a>';
                 }
             },
             {
