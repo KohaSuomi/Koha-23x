@@ -672,7 +672,7 @@
                 if ( searchfield != '' ) {
                     filter();
                 } else {
-                    $("#search_patron_filter").focus().after('<span id="empty-search-error" class="error">Please fill out this field.</span>');
+                    $("#search_patron_filter").focus().after('<span style="padding:5px;" id="empty-search-error" class="error">Please fill out this field.</div>');
                 }
             });
             $(".filterByLetter").on("click",function(e){
