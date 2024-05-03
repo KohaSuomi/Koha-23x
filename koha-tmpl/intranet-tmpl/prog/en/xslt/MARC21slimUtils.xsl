@@ -147,6 +147,24 @@
 	    </xsl:choose>
 	</xsl:template>
 
+	<!-- Function extractControlNumberIdentifier is used to extract the control number identifier from MARC tags 773/80/85 [etc.] subfield $w.
+	     Parameter: control number string.
+	     Assumes LOC convention: (OrgCode)recordNumber.
+	     If OrgCode is not present, return empty string.
+	     Additionally, handle various brackets/parentheses. Chop leading and trailing spaces.
+	-->
+	<xsl:template name="extractControlNumberIdentifier">
+	    <xsl:param name="subfieldW"/>
+	    <xsl:variable name="tranW" select="translate($subfieldW,']})&gt;','))))')"/>
+	    <xsl:choose>
+	      <xsl:when test="contains($tranW,'(') and contains($tranW,')')">
+	        <xsl:value-of select="str:encode-uri(normalize-space(translate(substring-before(substring-after($tranW,'('), ')'),'[]{}()&lt;&gt;','')), true())"/>
+	      </xsl:when>
+	      <xsl:otherwise>
+	      </xsl:otherwise>
+	    </xsl:choose>
+	</xsl:template>
+
     <!-- Function m880Select:  Display Alternate Graphic Representation (MARC 880) for selected latin "base"tags
         - should be called immediately before the corresonding latin tags are processed 
         - tags in right-to-left languages are displayed floating right
@@ -618,6 +636,7 @@
 
     <xsl:template name="host-item-entries">
         <xsl:param name="UseControlNumber"/>
+        <xsl:param name="controlField003"/>
         <!-- 773 -->
         <xsl:if test="marc:datafield[@tag=773]">
             <xsl:for-each select="marc:datafield[@tag=773]">
@@ -646,7 +665,29 @@
                     </xsl:variable>
                     <xsl:choose>
                         <xsl:when test="$UseControlNumber = '1' and marc:subfield[@code='w']">
+<!--
                             <a><xsl:attribute name="href">/cgi-bin/koha/catalogue/search.pl?q=Control-number:<xsl:call-template name="extractControlNumber"><xsl:with-param name="subfieldW" select="marc:subfield[@code='w']"/></xsl:call-template></xsl:attribute>
+-->
+                <xsl:variable name="f773cn">
+                    <xsl:call-template name="extractControlNumber">
+                        <xsl:with-param name="subfieldW" select="marc:subfield[@code='w']"/>
+                    </xsl:call-template>
+                </xsl:variable>
+                <xsl:variable name="f773cni">
+                    <xsl:call-template name="extractControlNumberIdentifier">
+                        <xsl:with-param name="subfieldW" select="marc:subfield[@code='w']"/>
+                    </xsl:call-template>
+                </xsl:variable>
+                            <a>
+                <xsl:choose>
+                    <!-- N.B. The query format has been carefully crafted to work with both Zebra and Elasticsearch... -->
+                    <xsl:when test="$f773cni != ''">
+                        <xsl:attribute name="href">/cgi-bin/koha/catalogue/search.pl?q=Control-number,ext:"<xsl:value-of select="str:encode-uri($f773cn, true())"/>" AND cni,ext:"<xsl:value-of select="str:encode-uri($f773cni, true())"/>"</xsl:attribute>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:attribute name="href">/cgi-bin/koha/catalogue/search.pl?q=Control-number,ext:"<xsl:value-of select="str:encode-uri($f773cn, true())"/>" AND cni,ext:"<xsl:value-of select="str:encode-uri($controlField003, true())"/>"</xsl:attribute>
+                    </xsl:otherwise>
+                </xsl:choose>
                             <xsl:value-of select="translate($f773, '()', '')"/>
                             </a>
                         </xsl:when>

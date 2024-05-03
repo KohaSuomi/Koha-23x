@@ -1119,6 +1119,7 @@
 
         <xsl:call-template name="host-item-entries">
             <xsl:with-param name="UseControlNumber" select="$UseControlNumber"/>
+            <xsl:with-param name="controlField003" select="$controlField003"/>
         </xsl:call-template>
 
         <xsl:if test="marc:datafield[@tag=502]">
