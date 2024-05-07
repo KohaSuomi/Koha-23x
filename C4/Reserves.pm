@@ -1902,17 +1902,16 @@ sub _koha_notify_reserve {
                 }
             );
         } else {
-            C4::Context->dbh->do(q|LOCK TABLE message_queue READ|)  unless $do_not_lock;
-            C4::Context->dbh->do(q|LOCK TABLE message_queue WRITE|) unless $do_not_lock;
             my $message = C4::Message->find_last_message( $patron->unblessed, $letter_code, $mtt );
             unless ($message) {
-                C4::Context->dbh->do(q|UNLOCK TABLES|) unless $do_not_lock;
                 C4::Message->enqueue( $letter, $patron, $mtt );
             } else {
+                $message->{status} = 'processing';
+                $message->update;
                 $message->append($letter);
+                $message->{status} = 'pending';
                 $message->update;
             }
-            C4::Context->dbh->do(q|UNLOCK TABLES|) unless $do_not_lock;
         }
     };
 
