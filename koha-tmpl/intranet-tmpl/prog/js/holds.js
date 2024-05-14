@@ -649,7 +649,11 @@ async function load_holds_queue() {
                             method: "GET",
                             url: "/api/v1/items/"+data.item_id,
                             success: function(res){
-                                $(currentCell).html('<a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber='+biblionumber+'&itemnumber='+data.item_id+'">'+res.external_id+'</a>');
+                                if (data.non_priority) {
+                                    $(currentCell).html('<a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber='+biblionumber+'&itemnumber='+data.item_id+'">'+res.external_id+'</a><br/><i>'+__("Non priority hold")+'</i>');
+                                } else {
+                                    $(currentCell).html('<a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber='+biblionumber+'&itemnumber='+data.item_id+'">'+res.external_id+'</a>');
+                                }
                             }
                         });
                         return '<img src="/intranet-tmpl/prog/img/spinner-small.gif" alt="" /><span class="waiting_msg"></span></div>';
