@@ -666,13 +666,14 @@
             $("#patron_search_form").on('submit', function(e){
                 e.preventDefault();
                 update_search_type();
+                var msg = _("Please fill out this field.");
                 $("#empty-search-error").remove();
                 var searchfield = $.trim($("#search_patron_filter").val());
                 $("#search_patron_filter").val(searchfield);
                 if ( searchfield != '' ) {
                     filter();
                 } else {
-                    $("#search_patron_filter").focus().after('<span style="padding:5px;" id="empty-search-error" class="error">Please fill out this field.</div>');
+                    $("#search_patron_filter").focus().after('<span style="padding:5px;" id="empty-search-error" class="error">' + msg + '</div>');
                 }
             });
             $(".filterByLetter").on("click",function(e){
