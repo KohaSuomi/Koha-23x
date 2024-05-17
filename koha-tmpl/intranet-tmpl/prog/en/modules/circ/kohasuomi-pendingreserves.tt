@@ -11,10 +11,57 @@
 [% INCLUDE 'datatables.inc' %]
 [% INCLUDE 'columns_settings.inc' %]
 
+
+
 <script type="text/JavaScript">
+
+
 
     //<![CDATA[
         $(document).ready(function() {
+
+
+            
+            
+            
+            
+            
+            
+
+//             var group_ids = new Array();
+//                 reservegroupsjson[0].forEach(element => {
+//                     console.log(element.parent_id);
+//                     if(jQuery.inArray(element.parent_id, group_ids) == -1){ //not in array
+//                         group_ids.push(element.parent_id);
+//                     } 
+                    
+//                 });
+
+// console.log(group_ids);
+// console.log(reservegroupsjson.length);
+
+// group_ids.forEach(generateGroupBranchArrays);
+
+
+//  function generateGroupBranchArrays ( ColumnData ){
+    
+    
+    
+//  }
+
+
+
+//                 group_ids.forEach(element => {
+//                     console.log(element.parent_id);
+//                     if(jQuery.inArray(element.parent_id, group_ids) == -1){ //not in array
+//                         group_ids.push(element.parent_id);
+//                     } 
+                    
+//                 });
+
+            
+            
+            
           var table_settings = [% TablesSettings.GetTableSettings('circ', 'holds', 'kohasuomi-holds-to-pull', 'json') | $raw %];
           var holdst = KohaTable("holdst", {
             "sPaginationType": "full_numbers"
@@ -152,6 +199,8 @@ function highlight() {
                 holdingarr.push(holdingbranches[j].textContent);
             }
         }
+        
+        checkMatchesReservegroups(odd);
         checkMatches(odd);
 
         function checkMatches(element_array) {
@@ -186,6 +235,85 @@ function highlight() {
                 }
             }
         }
+        function checkMatchesReservegroups(element_array) {
+            
+            var reservegroupsjson = [% reservegroups %];
+            console.log("reservegroups:");
+            //console.log(reservegroupsjson[0].branchcode);
+            
+            
+            
+            for(var key in reservegroupsjson) {
+                
+                for (var key1 in reservegroupsjson[key]) {
+                    console.log(reservegroupsjson[key][key1])
+                }
+            }
+            
+            function json2array(json){
+                var result = [];
+                var keys = Object.keys(json);
+                keys.forEach(function(key){
+                    result.push(json[key]);
+                });
+                return result;
+            }
+
+            var reservegroupsarray = json2array(reservegroupsjson);
+            console.log("array:");
+            console.log(reservegroupsarray);
+
+
+            for (var i = 0; i < element_array.length; ++i) {
+                var holdingarr = [];
+                var toarr = [];
+                var holdingbranches = element_array[i].getElementsByClassName("ks-holdingbranch");
+                var tobranches = element_array[i].getElementsByClassName("ks-tobranch");
+                for (var j = 0; j < holdingbranches.length; ++j) {
+                    holdingarr.push(holdingbranches[j].textContent);
+                }
+                for (var j = 0; j < tobranches.length; ++j) {
+                    toarr.push(tobranches[j].textContent);
+                }
+                var fromelements = [];
+                var toelements = [];
+                Array.from(holdingbranches, child => {
+                    fromelements.push(child);
+                });
+                Array.from(tobranches, child => {
+                    toelements.push(child);
+                });
+                for (var k = 0; k < fromelements.length; ++k) {
+                    for (var l = 0; l < toelements.length; ++l) {
+                        for (var m = 0; m < Object.keys(reservegroupsarray).length; m++) {
+                            console.log("reservegroupcheck");
+                            console.log(Object.keys(reservegroupsarray).length);
+                            
+                            for (var o = 0; o < Object.keys(reservegroupsarray[m]).length; o++) {
+                                console.log("Comparing:");
+                                console.log(toelements[l].textContent);
+                                console.log("with reservegroup id");               
+                                console.log(reservegroupsarray[m][o].branchcode);
+                                    
+                                if (reservegroupsarray[m][o].branchcode == toelements[l].textContent) {
+                                    console.log("resgroup match!");
+                                    
+                                    for (var p = 0; p < Object.keys(reservegroupsarray[m]).length; p++) {
+                                        if (reservegroupsarray[m][p].branchcode == fromelements[k].textContent) {
+                                            fromelements[k].style.color = "blue";
+                                            fromelements[k].style.fontWeight = "bold";
+                                            //toelements[l].style.color = "#ff5500";
+                                            //toelements[l].style.fontWeight = "bold";
+                                        
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     $( document ).ready(function() {
         highlight();
@@ -209,6 +337,11 @@ function highlight() {
         <div id="yui-main" style="padding-left:10px;padding-right:12px">
 
         <h2>Holds to pull reported on [% reporteddate | $KohaDates with_hours => 1 %]</h2>
+        
+        // [% FOREACH librarygroup IN reservegroups %]
+        //             <ul style="padding-left:0"><li style="list-style-type:none">[% librarygroup %]</li></ul>
+        // [% END %]
+        
 
         [% IF ( reserveloop ) %]
 

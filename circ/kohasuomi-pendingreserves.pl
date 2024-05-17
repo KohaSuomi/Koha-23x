@@ -29,6 +29,103 @@ use Time::localtime;
 use Time::Piece;
 use Storable;
 
+use File::Basename;
+use C4::Context;
+use Data::Dumper;
+use Log::Log4perl;
+use JSON;
+
+my $CONFPATH = dirname($ENV{'KOHA_CONF'});
+
+my $log_conf = $CONFPATH . "/log4perl.conf";
+Log::Log4perl::init($log_conf);
+my $log = Log::Log4perl->get_logger('sipohttp');
+$log->warn("pendingres");
+my $title = 'VARAUSRYHMA';
+
+my @reservegroup_ids;
+my @reserve_groups = Koha::Library::Groups->search({title => {-like => "VARAUSRYHMA%"}})->as_list;
+
+
+foreach my $reserve_group (@reserve_groups){
+    my $id = $reserve_group->id;
+    push( @reservegroup_ids, $id);
+    $log->warn("code:");
+    $log->warn(Dumper(@reservegroup_ids));
+}
+#$log->warn(Dumper($libraryGroups));
+
+my $dbh = C4::Context->dbh();
+my $sth;
+
+my @branches;
+
+foreach my $id (@reservegroup_ids){
+    
+    #push (@branches, $id);
+    
+    $sth = $dbh->prepare(
+        q{
+            select parent_id, branchcode from library_groups where parent_id = ?
+        }
+    );
+
+    $sth->execute($id) or die $dbh->errstr;
+    
+    
+
+    my @branchesref = @{$sth->fetchall_arrayref({})};
+    #https://www.perlmonks.org/?node_id=334186
+    push (@branches, \@branchesref);
+    
+    
+    $sth->finish;
+
+}
+
+$log->warn(Dumper(@branches));
+
+my $json_str = encode_json(\@branches);
+
+
+
+
+
+
+
+
+
+
+#my $group = Koha::Library::Groups->find($id);
+#my $group = Koha::Library::Groups->search( { title => $title });
+#my @children = $group->children()->as_list();
+#$log->warn(Dumper(@group[0]->branchcode));
+# my $reservegroup_id;
+# my @root_groups = Koha::Library::Groups->get_root_groups->as_list;
+# foreach my $root ( @root_groups ) {
+#     if ($root->title eq "VARAUSRYHMA") {
+#         $reservegroup_id = $root->id;
+#     }
+
+    
+# }
+
+# #my @branchcodes = Koha::Library::Groups->get_search_groups({ interface => 'opac' })->as_list;
+
+
+# my @branchcodes = Koha::Library::Groups->search(
+#         {
+#             parent_id  => $reservegroup_id,
+#             branchcode => { '!=' => undef },
+#         },
+#         { order_by => 'branchcode' }
+#     )->get_column('branchcode');
+    
+#my @branchcodes = $parent_id->children->get_column('branchcode');
+
+#my @groups = Koha::Library::Groups->get_search_groups({ interface => 'staff' })->as_list;
+#$log->warn($reservegroup_id);
+
 my $input = new CGI;
 
 my $theme = $input->param('theme');    # only used if allowthemeoverride is set
@@ -44,6 +141,8 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     }
 );
 
+
+
 my $reporteddate = localtime->datetime();
 $reporteddate=~s/T/ /;
 my @reservedata;
@@ -55,6 +154,7 @@ if ( -e '/tmp/kohasuomi-pendingreserves.tmp' ) {
 }
 
 $template->param(
+    reservegroups       => $json_str,
     reporteddate        => $reporteddate,
     reserveloop         => \@reservedata,
     "BiblioDefaultView".C4::Context->preference("BiblioDefaultView") => 1,
