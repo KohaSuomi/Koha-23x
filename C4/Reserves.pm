@@ -1906,10 +1906,7 @@ sub _koha_notify_reserve {
             unless ($message) {
                 C4::Message->enqueue( $letter, $patron, $mtt );
             } else {
-                $message->{status} = 'processing';
-                $message->update;
                 $message->append($letter);
-                $message->{status} = 'pending';
                 $message->update;
             }
         }
