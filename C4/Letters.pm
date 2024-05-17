@@ -989,6 +989,8 @@ sub SendQueuedMessages {
     my $params = shift;
     my $limit = $params->{limit};
     my $where = $params->{where};
+    # Default to email and sms, since we only process these two types here
+    $params->{type} = ['email', 'sms'] unless scalar($params->{type}) < 0;
 
     Koha::Exceptions::BadParameter->throw("Parameter message_id cannot be empty if passed.")
         if ( exists( $params->{message_id} ) && !$params->{message_id} );
@@ -1007,9 +1009,16 @@ sub SendQueuedMessages {
         !ref($params->{type}) && $params->{type} ? ( message_transport_type => $params->{type} ) : (), #TODO Existing inconsistency
     });
     $unsent_messages = $unsent_messages->search( \$where ) if $where;
+    # Mark messages as processing for preventing multiple processing
+    my @message_ids;
+    while( ( my $message_object = $unsent_messages->next ) && ( !$limit || $count_messages < $limit ) ) {
+        _set_message_status( { message_id => $message_object->id, status => 'processing' } );
+        push @message_ids, $message_object->id;
+    }
+    my $processing_messages = Koha::Notice::Messages->search({ message_id => \@message_ids});
 
     $domain_limits = Koha::Notice::Util->load_domain_limits; # (re)initialize per run
-    while( ( my $message_object = $unsent_messages->next ) && ( !$limit || $count_messages < $limit ) ) {
+    while( my $message_object = $processing_messages->next ) {
         my $message = $message_object->unblessed;
 
         # If this fails the database is unwritable and we won't manage to send a message that continues to be marked 'pending'
@@ -1325,7 +1334,14 @@ sub _get_unsent_messages {
 
     my $sth = $dbh->prepare( $statement );
     my $result = $sth->execute( @query_params );
-    return $sth->fetchall_arrayref({});
+    my $messages = $sth->fetchall_arrayref({});
+
+    # Change status to processing to prevent multiple processing
+    foreach my $message ( @$messages ) {
+        _set_message_status( { message_id => $message->{'message_id'}, status => 'processing' } );
+    }
+    
+    return $messages;
 }
 
 sub _send_message_by_email {
