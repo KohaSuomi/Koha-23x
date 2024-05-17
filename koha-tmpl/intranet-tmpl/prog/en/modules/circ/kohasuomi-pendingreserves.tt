@@ -188,6 +188,7 @@ function highlight() {
                 holdingarr.push(holdingbranches[j].textContent);
             }
         }
+        checkMatchesReservegroups(even);
         checkMatches(even);
         //for odd rows
         var odd = document.getElementsByClassName('odd');
@@ -336,12 +337,7 @@ function highlight() {
     <div id="doc3" class="yui-t2">
         <div id="yui-main" style="padding-left:10px;padding-right:12px">
 
-        <h2>Holds to pull reported on [% reporteddate | $KohaDates with_hours => 1 %]</h2>
-        
-        // [% FOREACH librarygroup IN reservegroups %]
-        //             <ul style="padding-left:0"><li style="list-style-type:none">[% librarygroup %]</li></ul>
-        // [% END %]
-        
+        <h2>Holds to pull reported on [% reporteddate | $KohaDates with_hours => 1 %]</h2>      
 
         [% IF ( reserveloop ) %]
 
