@@ -3777,10 +3777,7 @@ sub SendCirculationAlert {
             my $patron = Koha::Patrons->find($borrower->{borrowernumber});
             C4::Message->enqueue($letter, $patron, $mtt);
         } else {
-            $message->{status} = 'processing';
-            $message->update;
             $message->append($letter);
-            $message->{status} = 'pending';
             $message->update;
         }
     }
