@@ -593,8 +593,8 @@ function CheckImportantSubfields(p){
     return total;
 }
 
-function checkItemtypeSubfield(p, itemtypes){
-    var itemtype = $(p).find("input[id^='tag_952_subfield_y']").val();
+function checkItemtypeSubfield(itemtype_field, itemtypes){
+    var itemtype = itemtype_field.val();
     if(jQuery.inArray(itemtype, itemtypes) !== -1){
         return true;
     }
