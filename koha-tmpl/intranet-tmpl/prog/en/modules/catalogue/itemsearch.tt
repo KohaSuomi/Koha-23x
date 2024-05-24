@@ -98,7 +98,7 @@
                <option value=">">></option>
             [% END %]
             [% IF params.op == '<' %]
-               <option value="<" selected="selected">is not</option>
+               <option value="<" selected="selected"><</option>
             [% ELSE %]
                <option value="<"><</option>
             [% END %]
