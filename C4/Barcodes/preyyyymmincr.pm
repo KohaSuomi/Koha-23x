@@ -25,6 +25,7 @@ use Carp qw( carp );
 use C4::Context;
 
 use Koha::DateUtils qw( dt_from_string output_pref );
+use POSIX qw( strftime );
 
 use vars qw(@ISA);
 
@@ -57,29 +58,23 @@ sub new_object {
 sub initial {
     my $self = shift;
 
-    my $prefix = $self->{prefix};
-    my ($year, $month, $day) = split('-', $self->{datetime});
-
-    return $prefix.$year.$month.'00001';
+    return get_head($self).'1';
 }
 
 sub db_max {
     my $self = shift;
 
-    my $prefix = $self->{prefix};
-    my ($year, $month, $day) = split('-', $self->{datetime});
+    my $barcode = get_head($self);
 
-    my $query = "SELECT MAX(CAST(SUBSTRING(barcode,-4) AS signed)) from items where barcode REGEXP ?";
+    my $query = "SELECT MAX(CAST(SUBSTRING(barcode,-1) AS signed)) from items where barcode REGEXP ?";
     my $sth=C4::Context->dbh->prepare($query);
-    $sth->execute("^$prefix$year$month");
+    $sth->execute("^$barcode");
 
     my $nextnum;
     while (my ($count)= $sth->fetchrow_array) {
         $nextnum = $count if $count;
-        $nextnum = 0 if $nextnum && $nextnum == 9999;
+        $nextnum = 0 if $nextnum && $nextnum == 9;
     }
-
-    $nextnum = sprintf("%0*d", "5",$nextnum);
 
     return $nextnum;
 }
@@ -87,10 +82,7 @@ sub db_max {
 sub parse {
     my $self = shift;
 
-    my $prefix = $self->{prefix};
-    my ($year, $month, $day) = split('-', $self->{datetime});
-
-    my $head = $prefix.$year.$month;
+    my $head = get_head($self);
     my $incr = (@_) ? shift : $self->value;
     my $barcode = $head.$incr;
     unless ($incr){
@@ -99,6 +91,19 @@ sub parse {
     }
 
     return ($head, $incr, '');
+}
+
+sub get_head {
+    my $self = shift;
+
+    my $prefix = $self->{prefix};
+    my ($year, $month, $day) = split('-', $self->{datetime});
+    $year = substr($year, -2);
+    my $date = strftime "%H%M%S", localtime;
+
+    my $barcode = $prefix.$year.$month.$day.$date;
+
+    return $barcode;
 }
 
 BEGIN {

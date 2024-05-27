@@ -92,6 +92,8 @@ sub get_barcode {
 package C4::Barcodes::ValueBuilder::preyyyymmincr;
 use C4::Context;
 use YAML::XS;
+use Time::HiRes qw(time);
+use POSIX qw(strftime);
 my $DEBUG = 0;
 
 sub get_barcode {
@@ -113,21 +115,19 @@ sub get_barcode {
                 );
 
     my $prefix = $yaml->{$branchcode} || $yaml->{'Default'};
-
-    $query = "SELECT MAX(CAST(SUBSTRING(barcode,-4) AS signed)) from items where barcode REGEXP ?";
+    my $date = strftime "%H%M%S", localtime;
+    my $year = substr($args->{year}, -2); 
+    $query = "SELECT MAX(CAST(SUBSTRING(barcode,-1) AS signed)) from items where barcode REGEXP ?";
     $sth=C4::Context->dbh->prepare($query);
-    $sth->execute("^$prefix$args->{year}$args->{mon}");
+    $sth->execute("^$prefix$year$args->{mon}$args->{day}$date");
 
     while (my ($count)= $sth->fetchrow_array) {
         $nextnum = $count if $count;
-        $nextnum = 0 if $nextnum && $nextnum == 9999;
+        $nextnum = 0 if $nextnum && $nextnum == 9;
     }
 
     $nextnum++;
-    $nextnum = sprintf("%0*d", "5",$nextnum);
-
-    $barcode = $prefix;
-    $barcode .= $args->{year}.$args->{mon}.$nextnum;
+    $barcode = $prefix.$year.$args->{mon}.$args->{day}.$date.$nextnum;
 
     my $scr = qq~
         let elt = \$("#"+id);
