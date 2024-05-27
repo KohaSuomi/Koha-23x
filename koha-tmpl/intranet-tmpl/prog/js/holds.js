@@ -478,7 +478,7 @@ async function load_holds_queue() {
         currentPage: 0 // added by me to easily manage correct page displaying
     }
     const multiChange = {};
-    const libraries = await fetch_libraries();
+    const libraries = (await fetch_libraries()).sort((a, b) => (a.name > b.name ? 1 : -1));
     var holdsQueueTable = $("#holds-queue").DataTable($.extend(true, {}, dataTablesDefaults,{
         "ajax": async function (d, callback, s) {
             const info = $('#holds-queue').DataTable().page.info();
