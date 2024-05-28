@@ -52,6 +52,7 @@ use MARC::Record;
 use MARC::File::XML;
 use MIME::Base64 qw( decode_base64 );
 use JSON;
+use Unicode::Collate::Locale;
 
 Koha::SearchEngine::Elasticsearch::Search->mk_accessors(qw( store ));
 
@@ -511,8 +512,9 @@ sub _convert_facets {
             };
         }
         if( C4::Context->preference('FacetOrder') eq 'Alphabetical' ){
+            my $coll = Unicode::Collate::Locale->new( locale => "fi_FI" );
             @{ $facet->{facets} } =
-                sort { $a->{facet_label_value} cmp $b->{facet_label_value} } @{ $facet->{facets} };
+                sort { $coll->cmp ($a->{facet_label_value}, $b->{facet_label_value}) } @{ $facet->{facets} };
         }
         push @facets, $facet if exists $facet->{facets};
     }
