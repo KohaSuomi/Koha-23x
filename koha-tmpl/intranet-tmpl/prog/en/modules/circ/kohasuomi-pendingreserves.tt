@@ -274,11 +274,21 @@ function highlight() {
     <div id="doc3" class="yui-t2">
         <div id="yui-main" style="padding-left:10px;padding-right:12px">
 
-        <h2>Holds to pull reported on [% reporteddate | $KohaDates with_hours => 1 %]</h2>      
-
+        <h2>Holds to pull reported on [% reporteddate | $KohaDates with_hours => 1 %]</h2>
+  
         [% IF ( reserveloop ) %]
 
             <p>The following holds have not been filled. Please retrieve them and check them in.</p>
+            <ul>
+            <li>
+            <span style="color: #ff5500; font-weight: bold;">Orange</span>
+            <span> color means that the item can be found in the hold pickup library.</span>
+            </li>
+            <li>
+            <span style="font-weight: bold;">Bold</span>
+            <span> text means that the item can be found in a library that belongs to the same hold pickup location group as the hold's pickup library.</span>
+            </li>
+            </ul>
 
               <div class="searchresults">
                 <table id="holdst" style="width:100%;">
