@@ -715,7 +715,7 @@ if (C4::Context->userenv && C4::Context->userenv->{'branch'}) {
     $userbranch = C4::Context->userenv->{'branch'};
 }
 
-if (defined ($data{'branchcode'}) and ( $op eq 'edit_form' || $op eq 'duplicate' || $op eq 'add_form' )) {
+if (defined ($data{'branchcode'}) and ( $op eq 'modify' || $op eq 'duplicate' || $op eq 'add' )) {
     $userbranch = $data{'branchcode'};
 }
 $template->param( userbranch => $userbranch );
