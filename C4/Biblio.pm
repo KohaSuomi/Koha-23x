@@ -2531,6 +2531,9 @@ sub _koha_marc_update_biblioitem_cn_sort {
         if ( $cn_sort ne '' ) {
             $field->add_subfields( $biblioitem_subfield => $cn_sort );
         }
+        if (!$field->subfields) {
+            $marc->delete_field($field);
+        }
     } else {
 
         # if we get here, no biblioitem tag is present in the MARC record, so
