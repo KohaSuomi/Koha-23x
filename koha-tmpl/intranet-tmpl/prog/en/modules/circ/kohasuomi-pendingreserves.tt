@@ -284,10 +284,12 @@ function highlight() {
             <span style="color: #ff5500; font-weight: bold;">Orange</span>
             <span> color means that the item can be found in the hold pickup library.</span>
             </li>
+            [% IF reservegroups.length > 2 %]
             <li>
             <span style="font-weight: bold;">Bold</span>
             <span> text means that the item can be found in a library that belongs to the same hold pickup location group as the hold's pickup library.</span>
             </li>
+            [% END %]
             </ul>
 
               <div class="searchresults">
