@@ -89,7 +89,7 @@ subtest 'biblio() tests' => sub {
 
 subtest 'fill() tests' => sub {
 
-    plan tests => 14;
+    plan tests => 15;
 
     $schema->storage->txn_begin;
 
@@ -119,6 +119,7 @@ subtest 'fill() tests' => sub {
                 biblionumber   => $biblio->id,
                 borrowernumber => $patron->id,
                 itemnumber     => $item->id,
+                timestamp      => dt_from_string('2021-06-25 14:05:35'),
                 priority       => 10,
             }
         }
@@ -131,9 +132,9 @@ subtest 'fill() tests' => sub {
 
     my $interface = 'api';
     C4::Context->interface($interface);
-
+    my $hold_timestamp = $hold->timestamp;
     my $ret = $hold->fill;
-
+    
     is( ref($ret), 'Koha::Hold', '->fill returns the object type' );
     is( $ret->id, $hold->id, '->fill returns the object' );
 
@@ -142,6 +143,7 @@ subtest 'fill() tests' => sub {
 
     is( $old_hold->id, $hold->id, 'reserve_id retained' );
     is( $old_hold->priority, 0, 'priority set to 0' );
+    isnt( $old_hold->timestamp, $hold_timestamp, 'timestamp updated' );
     is( $old_hold->found, 'F', 'found set to F' );
 
     subtest 'item_id parameter' => sub {
