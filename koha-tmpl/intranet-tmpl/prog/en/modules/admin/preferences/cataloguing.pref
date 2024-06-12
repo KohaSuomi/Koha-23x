@@ -346,6 +346,20 @@ Cataloging:
                   dsc: descending.
                   az: from A to Z.
                   za: from Z to A.
+        -
+            - "Define rules for copying host data to component parts.<br/>"
+            - pref: PrepareHostField
+              type: textarea
+              syntax: text/x-yaml
+              class: code
+            - "Example:<br/>" 
+            - "001: 773$w<br/>"
+            - "020$a: 773$z<br/>"
+            - "022$a: 773$x<br/>"
+            - "028$ba: 773$o<br/>"
+            - "245$abnpc: 773$t<br/>"
+            - "264$abc: 773$d<br/>"
+            - "300$ae: 773$h"
     Importing:
         -
             - When matching on ISBN with the record import tool,
