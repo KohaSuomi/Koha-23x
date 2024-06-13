@@ -1588,7 +1588,7 @@ sub AddIssue {
                       $issuedate,    # here interpreted as the renewal date
                 }
             );
-            $issue = $item_object->checkout;
+            $issue = $item_object->checkout->get_from_storage;
         }
         else {
 
