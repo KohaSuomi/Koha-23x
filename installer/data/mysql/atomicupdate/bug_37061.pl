@@ -9,7 +9,7 @@ return {
 
         # Do you stuffs here
         $dbh->do(q{
-            INSERT INTO systempreferences (variable, value, options, type, explanation)
+            INSERT IGNORE INTO systempreferences (variable, value, options, type, explanation)
             VALUES ('PrepareHostField', '', '', 'Textarea', 'Define YAML rules for copying host data to component parts.');});
 
         say $out "Added new system preference 'PrepareHostField'";
