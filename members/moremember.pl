@@ -122,7 +122,9 @@ my $relatives_issues_count =
 
 if ( @guarantees ) {
     my $total_amount = $patron->relationships_debt({ include_guarantors => 0, only_this_guarantor => 1, include_this_patron => 1 });
+    my $total_amount_incl_non_blocking = $patron->relationships_debt_total({ include_guarantors => 0, only_this_guarantor => 1, include_this_patron => 1 });
     $template->param( guarantees_fines => $total_amount );
+    $template->param( guarantees_fines_total_incl_non_blocking => $total_amount_incl_non_blocking );
 }
 
 # Calculate and display patron's age
@@ -279,11 +281,13 @@ if ( $total > 0 ) {
 my $no_issues_charge_guarantors = C4::Context->preference("NoIssuesChargeGuarantorsWithGuarantees");
 if ( $no_issues_charge_guarantors ) {
     my $guarantors_non_issues_charges = $patron->relationships_debt({ include_guarantors => 1, only_this_guarantor => 0, include_this_patron => 1 });
+    my $guarantors_total_charges = $patron->relationships_debt_total({ include_guarantors => 1, only_this_guarantor => 0, include_this_patron => 1 });
 
     if ( $guarantors_non_issues_charges > $no_issues_charge_guarantors ) {
         $template->param(
             noissues                      => 1,
-            charges_guarantors_guarantees => $guarantors_non_issues_charges
+            charges_guarantors_guarantees => $guarantors_non_issues_charges,
+            charges_guarantors_guarantees_incl_non_blocking => $guarantors_total_charges
         );
     }
 }

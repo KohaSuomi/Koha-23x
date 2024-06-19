@@ -97,9 +97,9 @@
             [% INCLUDE 'blocked-fines.inc' fines = chargesamount %]
         [% END %]
 
-        [% IF ( charges_guarantors_guarantees ) %]
+        [% IF ( charges_guarantors_guarantees_incl_non_blocking ) %]
             <li class="charges_guarantors_guarantees">
-                <span class="circ-hlt">Charges:</span> Patron's guarantors and their other guarantees collectively owe [% charges_guarantors_guarantees | $Price %].
+                <span class="circ-hlt">Charges:</span> Patron's guarantors and their other guarantees collectively owe [% charges_guarantors_guarantees | $Price with_symbol => 1 %]. Total (incl. non-blocking): [% charges_guarantors_guarantees_incl_non_blocking | $Price with_symbol => 1 %].
                 [% IF noissues %]
                     <span class="circ-hlt">Checkouts are BLOCKED because fine balance is OVER THE LIMIT.</span>
                 [% END %]
@@ -108,7 +108,7 @@
 
         [% IF ( charges_guarantees ) %]
             <li class="charges_guarantees">
-                <span class="circ-hlt">Charges:</span> Patron's guarantees collectively owe [% chargesamount_guarantees | $Price with_symbol => 1 %].
+                <span class="circ-hlt">Charges:</span> Patron's guarantees collectively owe [% chargesamount_guarantees | $Price with_symbol => 1 %]. Total (incl. non-blocking ): [% chargesamount_guarantees_total | $Price with_symbol => 1 %].
                 Guarantees total (incl. non-blocking ): [% chargesamount_guarantees_total | $Price with_symbol => 1 %].
                 
                 

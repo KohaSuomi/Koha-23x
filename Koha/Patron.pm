@@ -594,6 +594,59 @@ sub relationships_debt {
     return $non_issues_charges;
 }
 
+#Includes non-blocing fines
+sub relationships_debt_total {
+    my ($self, $params) = @_;
+
+    my $include_guarantors  = $params->{include_guarantors};
+    my $only_this_guarantor = $params->{only_this_guarantor};
+    my $include_this_patron = $params->{include_this_patron};
+
+    my @guarantors;
+    if ( $only_this_guarantor ) {
+        @guarantors = $self->guarantee_relationships->count ? ( $self ) : ();
+        Koha::Exceptions::BadParameter->throw( { parameter => 'only_this_guarantor' } ) unless @guarantors;
+    } elsif ( $self->guarantor_relationships->count ) {
+        # I am a guarantee, just get all my guarantors
+        @guarantors = $self->guarantor_relationships->guarantors->as_list;
+    } else {
+        # I am a guarantor, I need to get all the guarantors of all my guarantees
+        @guarantors = map { $_->guarantor_relationships->guarantors->as_list } $self->guarantee_relationships->guarantees->as_list;
+    }
+
+    my $total_charges = 0;
+    my $seen = $include_this_patron ? {} : { $self->id => 1 }; # For tracking members already added to the total
+    foreach my $guarantor (@guarantors) {
+        
+        my $account = $guarantor->account;
+        my $account_lines = $account->outstanding_debits;
+        my $guarantor_total = $account_lines->total_outstanding;
+
+        $total_charges += $guarantor_total if $include_guarantors && !$seen->{ $guarantor->id };
+
+        # We've added what the guarantor owes, not added in that guarantor's guarantees as well
+        my @guarantees = map { $_->guarantee } $guarantor->guarantee_relationships->as_list;
+        my $guarantees_total_charges = 0;
+        foreach my $guarantee (@guarantees) {
+            
+            my $account = $guarantee->account;
+            my $account_lines = $account->outstanding_debits;
+            my $guarantee_total = $account_lines->total_outstanding;
+            
+            
+            next if $seen->{ $guarantee->id };
+            $guarantees_total_charges += $guarantee_total;
+            # Mark this guarantee as seen so we don't double count a guarantee linked to multiple guarantors
+            $seen->{ $guarantee->id } = 1;
+        }
+
+        $total_charges += $guarantees_total_charges;
+        $seen->{ $guarantor->id } = 1;
+    }
+
+    return $total_charges;
+}
+
 =head3 housebound_profile
 
 Returns the HouseboundProfile associated with this patron.

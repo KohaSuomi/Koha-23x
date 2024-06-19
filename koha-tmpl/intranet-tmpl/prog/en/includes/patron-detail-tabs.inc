@@ -19,9 +19,9 @@
             [% END %]
         [% END %]
 
-        [% IF ( guarantees_fines ) %]
+        [% IF ( guarantees_fines_total_incl_non_blocking ) %]
             [% WRAPPER tab_item tabname= "guarantees_finesandcharges" %]
-                <span>Guarantees' charges ([% guarantees_fines | $Price %])</span>
+                <span>Guarantees' charges ([% guarantees_fines_total_incl_non_blocking | $Price %])</span>
             [% END %]
         [% END %]
 
@@ -103,7 +103,7 @@
             [% END %]
         [% END # /tab_panel# %]
 
-        [% IF ( guarantees_fines ) %]
+        [% IF ( guarantees_fines_total_incl_non_blocking ) %]
             [% WRAPPER tab_panel tabname="guarantees_finesandcharges" %]
                 <table id="tguaranteesfines">
                     <thead>
@@ -124,7 +124,7 @@
                     [% END %]
                     <tfoot>
                         <td>Total due</td>
-                        <td>[% guarantees_fines | $Price %]</td>
+                        <td>[% guarantees_fines_total_incl_non_blocking | $Price %]</td>
                     </tfoot>
                 </table>
             [% END # /tab_panel# %]
