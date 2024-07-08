@@ -83,6 +83,13 @@
     responses:
       "200":
         description: A list of biblios
+      "400":
+        description: |
+          Bad request. Possible `error_code` attribute values:
+
+            * `invalid_query`
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "401":
         description: Authentication required
         schema:
@@ -134,6 +141,10 @@
     responses:
       "200":
         description: A biblio
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "401":
         description: Authentication required
         schema:
@@ -182,6 +193,10 @@
         description: Biblio deleted
         schema:
           type: string
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "401":
         description: Authentication required
         schema:
@@ -311,6 +326,13 @@
           type: array
           items:
             $ref: ../swagger.yaml#/definitions/booking
+      "400":
+        description: |
+          Bad request. Possible `error_code` attribute values:
+
+            * `invalid_query`
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "401":
         description: Authentication required
         schema:
@@ -382,6 +404,13 @@
         description: A list of checkouts
         schema:
           $ref: "../swagger.yaml#/definitions/checkouts"
+      "400":
+        description: |
+          Bad request. Possible `error_code` attribute values:
+
+            * `invalid_query`
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "403":
         description: Access forbidden
         schema:
@@ -446,6 +475,13 @@
           type: array
           items:
             $ref: "../swagger.yaml#/definitions/item"
+      "400":
+        description: |
+          Bad request. Possible `error_code` attribute values:
+
+            * `invalid_query`
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "401":
         description: Authentication required
         schema:
@@ -623,7 +659,10 @@
           items:
             $ref: "../swagger.yaml#/definitions/library"
       "400":
-        description: Missing or wrong parameters
+        description: |
+          Bad request. Possible `error_code` attribute values:
+
+            * `invalid_query`
         schema:
           $ref: "../swagger.yaml#/definitions/error"
       "401":
@@ -669,6 +708,10 @@
     responses:
       "200":
         description: A biblio
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "401":
         description: Authentication required
         schema:
@@ -735,6 +778,13 @@
           type: array
           items:
             $ref: "../swagger.yaml#/definitions/item"
+      "400":
+        description: |
+          Bad request. Possible `error_code` attribute values:
+
+            * `invalid_query`
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "401":
         description: Authentication required
         schema:
@@ -808,6 +858,10 @@
               description: number of ratings
               type: integer
           additionalProperties: false
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "401":
         description: Authentication required
         schema:

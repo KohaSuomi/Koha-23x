@@ -43,6 +43,13 @@
           type: array
           items:
             $ref: "../swagger.yaml#/definitions/transfer_limit"
+      "400":
+        description: |
+          Bad request. Possible `error_code` attribute values:
+
+            * `invalid_query`
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "500":
         description: |
           Internal server error. Possible `error_code` attribute values:
@@ -126,6 +133,10 @@
         description: Transfer limit deleted
         schema:
           type: string
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "401":
         description: Authentication required
         schema:
@@ -287,6 +298,10 @@
         description: Transfer limits deleted
         schema:
           type: string
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "401":
         description: Authentication required
         schema:

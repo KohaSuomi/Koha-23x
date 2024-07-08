@@ -38,6 +38,13 @@
         description: A list of checkouts
         schema:
           $ref: "../swagger.yaml#/definitions/checkouts"
+      "400":
+        description: |
+          Bad request. Possible `error_code` attribute values:
+
+            * `invalid_query`
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "403":
         description: Access forbidden
         schema:
@@ -89,7 +96,7 @@
         schema:
           $ref: "../swagger.yaml#/definitions/checkout"
       "400":
-        description: Missing or wrong parameters
+        description: Bad request
         schema:
           $ref: "../swagger.yaml#/definitions/error"
       "401":
@@ -149,6 +156,10 @@
         description: Updated borrower's checkout
         schema:
           $ref: "../swagger.yaml#/definitions/checkout"
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "403":
         description: Access forbidden
         schema:
@@ -188,6 +199,10 @@
         description: Updated borrower's checkout
         schema:
           $ref: "../swagger.yaml#/definitions/checkout"
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "403":
         description: Cannot renew checkout
         schema:
@@ -227,6 +242,10 @@
         description: Updated borrower's checkout
         schema:
           $ref: "../swagger.yaml#/definitions/checkout"
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "403":
         description: Cannot renew checkout
         schema:
@@ -274,6 +293,10 @@
         description: List of checkouts renewals
         schema:
           $ref: "../swagger.yaml#/definitions/renewals"
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "403":
         description: Access forbidden
         schema:
@@ -312,6 +335,10 @@
         description: Checkout renewability information
         schema:
           $ref: "../swagger.yaml#/definitions/allows_renewal"
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "403":
         description: Forbidden
         schema:
@@ -351,6 +378,10 @@
         description: Availability
         schema:
           $ref: "../swagger.yaml#/definitions/checkout_availability"
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "403":
         description: Access forbidden
         schema:
@@ -396,6 +427,10 @@
             confirmation_token:
               type: string
           additionalProperties: false
+      "400":
+        description: Bad request
+        schema:
+          $ref: "../swagger.yaml#/definitions/error"
       "403":
         description: Access forbidden
         schema:
