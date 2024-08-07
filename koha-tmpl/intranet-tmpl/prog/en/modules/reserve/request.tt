@@ -1043,8 +1043,8 @@
                 [% UNLESS borrowers %]
                     [% SET hold_count = Biblio.HoldsCount( biblio.biblionumber ) | html %]
                     [% SET active_hold_count = Biblio.ActiveHoldsCount( biblio.biblionumber ) | html %]
-                    [% SET upcoming_hold_count = Biblio.UpcomingHoldsCount( biblio.biblionumber ) | html %]
-                    [% SET suspended_hold_count = Biblio.SuspendedHoldsCount( biblio.biblionumber ) | html %]
+                    [% SET triggered_hold_count = Biblio.TriggeredHoldsCount( biblio.biblionumber ) | html %]
+                    [% SET inactive_hold_count = Biblio.InactiveHoldsCount( biblio.biblionumber ) | html %]
                     [% IF hold_count %]
                         <label for ="always_show_holds">Always show holds</label>
                         [% IF always_show_holds == 'DONT' %]
@@ -1248,8 +1248,8 @@
                     <form id="existing_holds" name="T[% time | html %]" action="modrequest.pl" method="post" style="display:block">
                     <h2>Existing holds</h2>
                     <p>Active: [% active_hold_count | html %]</p>
-                    <p>Upcoming: [% upcoming_hold_count | html %]</p>
-                    <p>Suspended: [% suspended_hold_count | html %]</p>
+                    <p>Triggered: [% triggered_hold_count | html %]</p>
+                    <p>Inactive: [% inactive_hold_count | html %]</p>
                     <div id="toolbar" class="btn-toolbar">
                         <div class="btn-group">
                             <input type="hidden" name="biblionumber" value="[% biblionumber | html %]"/>

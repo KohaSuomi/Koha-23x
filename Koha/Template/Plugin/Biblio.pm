@@ -47,7 +47,31 @@ sub ActiveHoldsCount {
     my $count = 0;
     my $now = dt_from_string;
     while ( my $hold = $holds->next ) {
-	$count++ if $hold->is_suspended == 0 and DateTime->compare($now, dt_from_string( $hold->reservedate )) > 0;
+	$count++ if $hold->is_found == 0 and $hold->is_suspended == 0 and DateTime->compare($now, dt_from_string( $hold->reservedate )) > 0;
+    }
+    return $count;
+}
+
+sub InactiveHoldsCount {
+    my ( $self, $biblionumber ) = @_;
+
+    my $holds = Koha::Holds->search( { biblionumber => $biblionumber } );
+    my $count = 0;
+    my $now = dt_from_string;
+    while ( my $hold = $holds->next ) {
+	$count++ if $hold->is_suspended == 1 || DateTime->compare(dt_from_string( $hold->reservedate ), $now) > 0;
+    }
+    return $count;
+}
+
+sub TriggeredHoldsCount {
+    my ( $self, $biblionumber ) = @_;
+
+    my $holds = Koha::Holds->search( { biblionumber => $biblionumber } );
+    my $count = 0;
+    my $now = dt_from_string;
+    while ( my $hold = $holds->next ) {
+	$count++ if $hold->is_found == 1;
     }
     return $count;
 }
