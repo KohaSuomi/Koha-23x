@@ -1713,8 +1713,9 @@ modules:
             -
               columnname: print_slip
 
-    holds:
       kohasuomi-holds-to-pull:
+        default_display_length: 20
+        default_sort_order: 1
         columns:
             -
               columnname: pull
